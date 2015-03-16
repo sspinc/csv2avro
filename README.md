@@ -1,4 +1,4 @@
-# Csv2avro
+# CSV2Avro
 
 TODO: Write a gem description
 

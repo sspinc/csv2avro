@@ -5,7 +5,7 @@ require 'csv2avro/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "csv2avro"
-  spec.version       = Csv2avro::VERSION
+  spec.version       = CSV2Avro::VERSION
   spec.authors       = ["Peter Ableda"]
   spec.email         = ["scotty@secretsaucepartners.com"]
   spec.summary       = %q{TODO: Write a short summary. Required.}

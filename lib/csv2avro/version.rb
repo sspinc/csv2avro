@@ -1,3 +1,3 @@
-module Csv2avro
+module CSV2Avro
   VERSION = "0.0.1"
 end
