@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Peter Ableda"]
   spec.email         = ["scotty@secretsaucepartners.com"]
   spec.summary       = %q{Convert CSV files to Avro}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.description   = %q{Convert CSV files to Avro like a boss.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
