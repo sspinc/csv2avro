@@ -1,5 +1,4 @@
 require "csv2avro/version"
 
-module CSV2Avro
-  # Your code goes here...
+class CSV2Avro
 end
