@@ -11,7 +11,7 @@ option_parser = OptionParser.new do |opts|
   opts.banner = "Version #{CSV2Avro::VERSION} of CSV2Avro\n" \
     "Usage: #{File.basename(__FILE__)} [#{OPERATIONS.join('|')}] [options] [source_path] [target_path]"
 
-  opts.on("-s", "--separator SEPARATOR", "Separator character for the csv file") do |char|
+  opts.on("-d", "--delimiter=DELIMITER", "Field delimiter. If none specified, then comma is used as the delimiter.") do |char|
     options[:separator] = char
   end
 
