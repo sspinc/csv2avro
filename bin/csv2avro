@@ -15,6 +15,10 @@ option_parser = OptionParser.new do |opts|
     options[:separator] = char
   end
 
+  opts.on("-s", "--schema=SCHEMA", "A file containing the Avro schema. This value is required.") do |path|
+    options[:schema] = path
+  end
+
   opts.on("-h", "--help", "Prints help") do
     puts opts
     exit
