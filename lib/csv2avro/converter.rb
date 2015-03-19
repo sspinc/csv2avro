@@ -1,3 +1,6 @@
+require 'csv2avro/avro_file'
+require 'csv'
+
 class CSV2Avro
   class Converter
     attr_reader :input, :schema, :output_path, :csv_options, :converter_options

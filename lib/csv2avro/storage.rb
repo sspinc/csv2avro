@@ -1,3 +1,6 @@
+require 'aws-sdk'
+require 'uri'
+
 class CSV2Avro
   class Storage
     attr_reader :uri

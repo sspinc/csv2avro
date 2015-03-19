@@ -1,3 +1,5 @@
+require 'avro'
+
 class CSV2Avro
   class AvroFile
     def initialize(schema_string, output_path)

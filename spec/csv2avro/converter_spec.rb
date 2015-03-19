@@ -14,7 +14,7 @@ RSpec.describe CSV2Avro::Converter do
       let(:schema_string) do
         {
           type: 'record',
-          name: 'test1',
+          name: 'categories',
           fields: [
             {name: 'id', type: 'int'},
             {name: 'name', type: 'string'},
