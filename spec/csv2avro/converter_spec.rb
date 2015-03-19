@@ -10,16 +10,17 @@ RSpec.describe CSV2Avro::Converter do
          1,dresses,Dresses
          2,female-tops,"
       end
+
       let(:schema_string) do
-        '{
-          "type": "record",
-          "name": "test1",
-          "fields": [
-            {"name": "id", "type": "int"},
-            {"name": "name", "type": "string"},
-            {"name": "description", "type": ["string","null"]}
+        {
+          type: 'record',
+          name: 'test1',
+          fields: [
+            {name: 'id', type: 'int'},
+            {name: 'name', type: 'string'},
+            {name: 'description', type: ['string','null']}
           ]
-        }'
+        }.to_json
       end
 
       before do
