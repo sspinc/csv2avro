@@ -16,7 +16,7 @@ class CSV2Avro
         :skip_blanks => true
       }
 
-      @csv_options[:col_sep] = options[:separator] if options[:separator]
+      @csv_options[:col_sep] = options[:delimiter] if options[:delimiter]
       @converter_options = options
     end
 
