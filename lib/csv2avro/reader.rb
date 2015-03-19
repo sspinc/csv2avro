@@ -1,7 +1,9 @@
 class CSV2Avro
   class Reader
-    def initialize(path, schema=nil)
-      @path = path
+    attr_reader :io
+
+    def initialize(io, schema=nil)
+      @io = io
       @reader = if schema
         schema_file = Avro::Schema.parse(schema)
         Avro::IO::DatumReader.new(nil, schema_file)
@@ -11,9 +13,7 @@ class CSV2Avro
     end
 
     def perform
-      file = File.open(@path, 'r+')
-
-      dr = Avro::DataFile::Reader.new(file, @reader)
+      dr = Avro::DataFile::Reader.new(io, @reader)
 
       rows = []
       dr.each { |record| rows << record }

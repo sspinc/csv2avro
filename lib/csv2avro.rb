@@ -7,6 +7,8 @@ class CSV2Avro
     data_io = Storage.new(input_path).read
     schema_io = Storage.new(options[:schema]).read
 
-    Converter.new(data_io, schema_io, output_path, options).perform
+    output = File.open(output_path, 'wb')
+
+    io = Converter.new(data_io, schema_io, output, options).perform
   end
 end

@@ -3,12 +3,12 @@ require 'csv'
 
 class CSV2Avro
   class Converter
-    attr_reader :input, :schema, :output_path, :csv_options, :converter_options
+    attr_reader :input, :schema, :output, :csv_options, :converter_options
 
-    def initialize(input, schema, output_path, options)
+    def initialize(input, schema, output, options)
       @input = input
       @schema = schema
-      @output_path   = output_path
+      @output   = output
 
       @csv_options = {
         :headers => true,
@@ -21,7 +21,7 @@ class CSV2Avro
     end
 
     def perform
-      avro = CSV2Avro::AvroFile.new(schema, output_path)
+      avro = CSV2Avro::AvroFile.new(schema, output)
 
        CSV.parse(input, csv_options) do |row|
         row_as_hash = row.to_hash
@@ -29,7 +29,8 @@ class CSV2Avro
         avro.write(row_as_hash)
       end
 
-      avro.close
+      avro.flush
+      avro.io
     end
   end
 end
