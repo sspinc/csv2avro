@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe CSV2Avro::Converter do
-  TEMP_FILE_PATH = '_test_file.avro'
+  TEMP_FILE_PATH = 'test/_file.avro'
 
   describe '#perform' do
     context 'fields with different types' do
