@@ -210,5 +210,51 @@ RSpec.describe CSV2Avro::Converter do
         )
       end
     end
+
+    context 'schema with enum column' do
+      let(:schema) do
+        StringIO.new(
+          {
+            name: 'product',
+            type: 'record',
+            fields: [
+              { name: 'id', type: 'int' },
+              { name: 'size_type', type:
+                [
+                  {
+                    type:'enum', name:'size_type_values', symbols:['regular', 'petite', 'plus', 'tall', 'big_and_tall', 'maternity']
+                  }, 'null'
+                ], default: 'regular'
+              }
+            ]
+          }.to_json
+        )
+      end
+
+      let(:input) do
+        StringIO.new(
+          csv_string = CSV.generate do |csv|
+            csv << %w[id size_type]
+            csv << %w[1 regular]
+            csv << %w[2 petite]
+            csv << %w[3 ]
+          end
+        )
+      end
+
+      subject(:avro_io) do
+        CSV2Avro::Converter.new(input, schema, StringIO.new, { write_defaults: true }).perform
+      end
+
+      it 'should store the data with the given schema' do
+        expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+          [
+            { 'id'=>1, 'size_type'=>'regular' },
+            { 'id'=>2, 'size_type'=>'petite' },
+            { 'id'=>3, 'size_type'=>'regular' }
+          ]
+        )
+      end
+    end
   end
 end
