@@ -2,11 +2,13 @@ require 'spec_helper'
 
 RSpec.describe CSV2Avro::Converter do
   describe '#perform' do
-    context 'fields with different types' do
+    context 'csv data with string and integer columns' do
       let(:input_string) do
-        "id,name,description
-         1,dresses,Dresses
-         2,female-tops,"
+        csv_string = CSV.generate do |csv|
+          csv << %w[id name description]
+          csv << %w[1 dresses Dresses]
+          csv << %w[2 female-tops]
+        end
       end
 
       let(:schema_string) do
@@ -14,9 +16,9 @@ RSpec.describe CSV2Avro::Converter do
           type: 'record',
           name: 'categories',
           fields: [
-            {name: 'id', type: 'int'},
-            {name: 'name', type: 'string'},
-            {name: 'description', type: ['string','null']}
+            { name: 'id', type: 'int' },
+            { name: 'name', type: 'string' },
+            { name: 'description', type: ['string','null'] }
           ]
         }.to_json
       end
@@ -30,8 +32,11 @@ RSpec.describe CSV2Avro::Converter do
 
       it 'should work' do
         expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
-          [{"id"=>1, "name"=>"dresses", "description"=>"Dresses"},
-           {"id"=>2, "name"=>"female-tops", "description"=>nil}])
+          [
+            { "id"=>1, "name"=>"dresses", "description"=>"Dresses" },
+            { "id"=>2, "name"=>"female-tops", "description"=>nil }
+          ]
+        )
       end
     end
   end
