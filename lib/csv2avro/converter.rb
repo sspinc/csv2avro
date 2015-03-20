@@ -1,3 +1,4 @@
+require 'csv2avro/schema_utils'
 require 'csv2avro/avro_file'
 require 'csv'
 
@@ -22,15 +23,41 @@ class CSV2Avro
 
     def perform
       avro = CSV2Avro::AvroFile.new(schema, output)
+      schama_utils = CSV2Avro::SchemaUtils.new(avro.writer_schema)
 
-       CSV.parse(input, csv_options) do |row|
+      boolean_columns = schama_utils.column_names_with_type(:boolean)
+      array_columns   = schama_utils.column_names_with_type(:array)
+
+      CSV.parse(input, csv_options) do |row|
         row_as_hash = row.to_hash
+
+        boolean_columns.each do |column|
+          value = row_as_hash[column]
+          row_as_hash[column] = parse_boolean(value) if value
+        end
+
+        array_columns.each do |column|
+          value = row_as_hash[column]
+          row_as_hash[column] = parse_array(value) if value
+        end
 
         avro.write(row_as_hash)
       end
 
       avro.flush
       avro.io
+    end
+
+    private
+
+    def parse_boolean(value)
+      return true  if value == true  || value =~ (/^(true|t|yes|y|1)$/i)
+      return false if value == false || value =~ (/^(false|f|no|n|0)$/i)
+      nil
+    end
+
+    def parse_array(value)
+      return value.split(',') if value
     end
   end
 end

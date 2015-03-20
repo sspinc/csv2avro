@@ -67,5 +67,44 @@ RSpec.describe CSV2Avro::Converter do
         end
       end
     end
+
+    context 'schema with boolean and array columns' do
+      let(:schema) do
+        StringIO.new(
+          {
+            name: 'categories',
+            type: 'record',
+            fields: [
+              { name: 'id', type: 'int' },
+              { name: 'enabled', type: ['boolean', 'null'] },
+              { name: 'image_links', type: [{ type: 'array', items: 'string' }, 'null'] }
+            ]
+          }.to_json
+        )
+      end
+
+      let(:input) do
+        StringIO.new(
+          csv_string = CSV.generate({col_sep: "\t"}) do |csv|
+            csv << %w[id enabled image_links]
+            csv << %w[1 true http://www.images.com/dresses.jpeg]
+            csv << %w[2 false http://www.images.com/bras1.jpeg,http://www.images.com/bras2.jpeg]
+          end
+        )
+      end
+
+      subject(:avro_io) do
+        CSV2Avro::Converter.new(input, schema, StringIO.new, {delimiter: "\t"}).perform
+      end
+
+      it 'should store the data with the given schema' do
+        expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+          [
+            { 'id'=>1, 'enabled'=>true, 'image_links'=>['http://www.images.com/dresses.jpeg'] },
+            { 'id'=>2, 'enabled'=>false, 'image_links'=>['http://www.images.com/bras1.jpeg', 'http://www.images.com/bras2.jpeg'] }
+          ]
+        )
+      end
+    end
   end
 end
