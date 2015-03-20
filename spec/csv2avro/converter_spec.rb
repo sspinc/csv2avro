@@ -6,12 +6,12 @@ RSpec.describe CSV2Avro::Converter do
       let(:schema) do
         StringIO.new(
           {
-            type: 'record',
             name: 'categories',
+            type: 'record',
             fields: [
               { name: 'id', type: 'int' },
               { name: 'name', type: 'string' },
-              { name: 'description', type: ['string','null'] }
+              { name: 'description', type: ['string', 'null'] }
             ]
           }.to_json
         )
@@ -35,8 +35,8 @@ RSpec.describe CSV2Avro::Converter do
         it 'should store the data with the given schema' do
           expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
             [
-              { "id"=>1, "name"=>"dresses",     "description"=>"Dresses" },
-              { "id"=>2, "name"=>"female-tops", "description"=>nil }
+              { 'id'=>1, 'name'=>'dresses',     'description'=>'Dresses' },
+              { 'id'=>2, 'name'=>'female-tops', 'description'=>nil }
             ]
           )
         end
@@ -60,8 +60,8 @@ RSpec.describe CSV2Avro::Converter do
         it 'should store the data with the given schema' do
           expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
             [
-              { "id"=>1, "name"=>"dresses",     "description"=>"Dresses" },
-              { "id"=>2, "name"=>"female-tops", "description"=>nil }
+              { 'id'=>1, 'name'=>'dresses',     'description'=>'Dresses' },
+              { 'id'=>2, 'name'=>'female-tops', 'description'=>nil }
             ]
           )
         end
