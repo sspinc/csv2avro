@@ -25,5 +25,16 @@ class CSV2Avro
         schema.fields.map{ |field| [field.name, field.default] }
       ]
     end
+
+    # TODO: Change this when the avro gem starts to support aliases
+    def self.aliases_hash(schema_string)
+      schema_as_json = JSON.parse(schema_string)
+
+      Hash[
+        schema_as_json['fields'].select{ |field| field['aliases'] }.flat_map do |field|
+          field['aliases'].map { |one_alias| [one_alias, field['name']]}
+        end
+      ]
+    end
   end
 end

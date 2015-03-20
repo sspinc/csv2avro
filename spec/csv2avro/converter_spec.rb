@@ -172,5 +172,43 @@ RSpec.describe CSV2Avro::Converter do
         )
       end
     end
+
+    context 'schema with aliased fields' do
+      let(:input) do
+        StringIO.new(
+          csv_string = CSV.generate do |csv|
+            csv << %w[id color_id]
+            csv << %w[1 1_red]
+            csv << %w[2 2_blue]
+          end
+        )
+      end
+
+      let(:schema) do
+        StringIO.new(
+          {
+            name: 'product',
+            type: 'record',
+            fields: [
+              { name: 'id', type: 'int' },
+              { name: 'look_id', type: 'string', aliases: ['color_id', 'photo_group_id'] }
+            ]
+          }.to_json
+        )
+      end
+
+      subject(:avro_io) do
+        CSV2Avro::Converter.new(input, schema, StringIO.new, {}).perform
+      end
+
+      it 'should work' do
+        expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+          [
+            {'id'=>1, 'look_id'=>'1_red'},
+            {'id'=>2, 'look_id'=>'2_blue'}
+          ]
+        )
+      end
+    end
   end
 end

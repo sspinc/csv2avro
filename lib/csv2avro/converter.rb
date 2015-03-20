@@ -23,6 +23,8 @@ class CSV2Avro
 
     def perform
       avro = CSV2Avro::AvroFile.new(schema, output)
+      init_header_converter
+
       schama_utils = CSV2Avro::SchemaUtils.new(avro.writer_schema)
 
       boolean_columns = schama_utils.column_names_with_type(:boolean)
@@ -78,6 +80,16 @@ class CSV2Avro
           end
         end
       ]
+    end
+
+    def init_header_converter
+      aliases_hash = CSV2Avro::SchemaUtils.aliases_hash(schema.string)
+
+      CSV::HeaderConverters[:aliases] = lambda do |header|
+          aliases_hash[header] || header
+      end
+
+      csv_options[:header_converters] = :aliases
     end
   end
 end

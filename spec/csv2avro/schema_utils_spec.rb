@@ -67,8 +67,28 @@ RSpec.describe CSV2Avro::SchemaUtils do
         CSV2Avro::SchemaUtils.new(schema)
       end
 
-      it 'should return a hash with the default values' do
+      it 'should return a hash with the field - default value pairs' do
         expect(schema_utils.defaults_hash).to eq({ 'id'=>nil, 'category'=>'unknown', 'enabled'=>false })
+      end
+    end
+  end
+
+
+  describe '.aliases_hash' do
+    context 'shema with aliases' do
+      let(:schema_string) do
+        {
+          name: 'product',
+          type: 'record',
+          fields: [
+            { name: 'id', type: 'int' },
+            { name: 'look_id', type: 'string', aliases: ['color_id', 'photo_group_id'] }
+          ]
+        }.to_json
+      end
+
+      it 'should return a hash with the alias - name mapping' do
+        expect(CSV2Avro::SchemaUtils.aliases_hash(schema_string)).to eq({ 'color_id'=>'look_id', 'photo_group_id'=>'look_id' })
       end
     end
   end
