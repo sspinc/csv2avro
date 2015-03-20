@@ -57,7 +57,9 @@ class CSV2Avro
     end
 
     def parse_array(value)
-      return value.split(',') if value
+      delimiter = converter_options[:array_delimiter] || ','
+
+      value.split(delimiter) if value
     end
   end
 end

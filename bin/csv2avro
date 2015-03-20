@@ -15,6 +15,10 @@ option_parser = OptionParser.new do |opts|
     options[:delimiter] = char.gsub("\\t", "\t")
   end
 
+  opts.on("-a", "--array-delimiter [ARRAY_DELIMITER]", "Array field delimiter. If none specified, then comma is used as the delimiter.") do |char|
+    options[:array_delimiter] = char
+  end
+
   opts.on("-s", "--schema SCHEMA", "A file containing the Avro schema. This value is required.") do |path|
     options[:schema] = path
   end

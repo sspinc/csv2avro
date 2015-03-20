@@ -83,27 +83,54 @@ RSpec.describe CSV2Avro::Converter do
         )
       end
 
-      let(:input) do
-        StringIO.new(
-          csv_string = CSV.generate({col_sep: "\t"}) do |csv|
-            csv << %w[id enabled image_links]
-            csv << %w[1 true http://www.images.com/dresses.jpeg]
-            csv << %w[2 false http://www.images.com/bras1.jpeg,http://www.images.com/bras2.jpeg]
-          end
-        )
+      context 'separated with commas (default)' do
+        let(:input) do
+          StringIO.new(
+            csv_string = CSV.generate({col_sep: "\t"}) do |csv|
+              csv << %w[id enabled image_links]
+              csv << %w[1 true http://www.images.com/dresses.jpeg]
+              csv << %w[2 false http://www.images.com/bras1.jpeg,http://www.images.com/bras2.jpeg]
+            end
+          )
+        end
+
+        subject(:avro_io) do
+          CSV2Avro::Converter.new(input, schema, StringIO.new, {delimiter: "\t"}).perform
+        end
+
+        it 'should store the data with the given schema' do
+          expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+            [
+              { 'id'=>1, 'enabled'=>true, 'image_links'=>['http://www.images.com/dresses.jpeg'] },
+              { 'id'=>2, 'enabled'=>false, 'image_links'=>['http://www.images.com/bras1.jpeg', 'http://www.images.com/bras2.jpeg'] }
+            ]
+          )
+        end
       end
 
-      subject(:avro_io) do
-        CSV2Avro::Converter.new(input, schema, StringIO.new, {delimiter: "\t"}).perform
-      end
+     context 'separated with semicolons' do
+        let(:input) do
+          StringIO.new(
+            csv_string = CSV.generate({col_sep: "\t"}) do |csv|
+              csv << %w[id enabled image_links]
+              csv << %w[1 true http://www.images.com/dresses.jpeg]
+              csv << %w[2 false http://www.images.com/bras1.jpeg;http://www.images.com/bras2.jpeg]
+            end
+          )
+        end
 
-      it 'should store the data with the given schema' do
-        expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
-          [
-            { 'id'=>1, 'enabled'=>true, 'image_links'=>['http://www.images.com/dresses.jpeg'] },
-            { 'id'=>2, 'enabled'=>false, 'image_links'=>['http://www.images.com/bras1.jpeg', 'http://www.images.com/bras2.jpeg'] }
-          ]
-        )
+        subject(:avro_io) do
+          CSV2Avro::Converter.new(input, schema, StringIO.new, {delimiter: "\t", array_delimiter: ';'}).perform
+        end
+
+        it 'should store the data with the given schema' do
+          expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+            [
+              { 'id'=>1, 'enabled'=>true, 'image_links'=>['http://www.images.com/dresses.jpeg'] },
+              { 'id'=>2, 'enabled'=>false, 'image_links'=>['http://www.images.com/bras1.jpeg', 'http://www.images.com/bras2.jpeg'] }
+            ]
+          )
+        end
       end
     end
   end
