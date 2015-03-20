@@ -54,7 +54,7 @@ RSpec.describe CSV2Avro::Converter do
         end
 
         subject(:avro_io) do
-          CSV2Avro::Converter.new(input, schema, StringIO.new, {delimiter: "\t"}).perform
+          CSV2Avro::Converter.new(input, schema, StringIO.new, { delimiter: "\t" }).perform
         end
 
         it 'should store the data with the given schema' do
@@ -101,14 +101,14 @@ RSpec.describe CSV2Avro::Converter do
         it 'should store the data with the given schema' do
           expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
             [
-              { 'id'=>1, 'enabled'=>true, 'image_links'=>['http://www.images.com/dresses.jpeg'] },
+              { 'id'=>1, 'enabled'=>true,  'image_links'=>['http://www.images.com/dresses.jpeg'] },
               { 'id'=>2, 'enabled'=>false, 'image_links'=>['http://www.images.com/bras1.jpeg', 'http://www.images.com/bras2.jpeg'] }
             ]
           )
         end
       end
 
-     context 'separated with semicolons' do
+      context 'separated with semicolons' do
         let(:input) do
           StringIO.new(
             csv_string = CSV.generate({col_sep: "\t"}) do |csv|
@@ -120,17 +120,56 @@ RSpec.describe CSV2Avro::Converter do
         end
 
         subject(:avro_io) do
-          CSV2Avro::Converter.new(input, schema, StringIO.new, {delimiter: "\t", array_delimiter: ';'}).perform
+          CSV2Avro::Converter.new(input, schema, StringIO.new, { delimiter: "\t", array_delimiter: ';' }).perform
         end
 
         it 'should store the data with the given schema' do
           expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
             [
-              { 'id'=>1, 'enabled'=>true, 'image_links'=>['http://www.images.com/dresses.jpeg'] },
+              { 'id'=>1, 'enabled'=>true,  'image_links'=>['http://www.images.com/dresses.jpeg'] },
               { 'id'=>2, 'enabled'=>false, 'image_links'=>['http://www.images.com/bras1.jpeg', 'http://www.images.com/bras2.jpeg'] }
             ]
           )
         end
+      end
+    end
+
+    context 'shema with default vaules' do
+      let(:schema) do
+        StringIO.new(
+          {
+            name: 'product',
+            type: 'record',
+            fields: [
+              { name: 'id', type: 'int' },
+              { name: 'category', type: 'string', default: 'unknown' },
+              { name: 'enabled', type: ['boolean', 'null'], default: false }
+            ]
+          }.to_json
+        )
+      end
+
+      let(:input) do
+        StringIO.new(
+          csv_string = CSV.generate do |csv|
+            csv << %w[id category enabled]
+            csv << %w[1 dresses true]
+            csv << %w[2  ]
+          end
+        )
+      end
+
+      subject(:avro_io) do
+        CSV2Avro::Converter.new(input, schema, StringIO.new, { write_defaults: true }).perform
+      end
+
+      it 'should store the defaults data' do
+        expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+          [
+            { 'id'=>1, 'category'=>'dresses', 'enabled'=>true },
+            { 'id'=>2, 'category'=>'unknown', 'enabled'=>false }
+          ]
+        )
       end
     end
   end

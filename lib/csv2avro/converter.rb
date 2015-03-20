@@ -28,6 +28,8 @@ class CSV2Avro
       boolean_columns = schama_utils.column_names_with_type(:boolean)
       array_columns   = schama_utils.column_names_with_type(:array)
 
+      defaults_hash = schama_utils.defaults_hash if converter_options[:write_defaults]
+
       CSV.parse(input, csv_options) do |row|
         row_as_hash = row.to_hash
 
@@ -39,6 +41,10 @@ class CSV2Avro
         array_columns.each do |column|
           value = row_as_hash[column]
           row_as_hash[column] = parse_array(value) if value
+        end
+
+        if converter_options[:write_defaults]
+          row_as_hash = add_defaults_to_hash(row_as_hash, defaults_hash)
         end
 
         avro.write(row_as_hash)
@@ -60,6 +66,18 @@ class CSV2Avro
       delimiter = converter_options[:array_delimiter] || ','
 
       value.split(delimiter) if value
+    end
+
+    def add_defaults_to_hash(hash, defaults_hash)
+      Hash[
+        hash.map do |key, value|
+          if value.nil?
+            [key, defaults_hash[key]]
+          else
+            [key, value]
+          end
+        end
+      ]
     end
   end
 end

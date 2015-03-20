@@ -11,6 +11,10 @@ option_parser = OptionParser.new do |opts|
   opts.banner = "Version #{CSV2Avro::VERSION} of CSV2Avro\n" \
     "Usage: #{File.basename(__FILE__)} [#{OPERATIONS.join('|')}] [options] [source_path] [target_path]"
 
+  opts.on("-s", "--schema SCHEMA", "A file containing the Avro schema. This value is required.") do |path|
+    options[:schema] = path
+  end
+
   opts.on("-d", "--delimiter [DELIMITER]", "Field delimiter. If none specified, then comma is used as the delimiter.") do |char|
     options[:delimiter] = char.gsub("\\t", "\t")
   end
@@ -19,8 +23,8 @@ option_parser = OptionParser.new do |opts|
     options[:array_delimiter] = char
   end
 
-  opts.on("-s", "--schema SCHEMA", "A file containing the Avro schema. This value is required.") do |path|
-    options[:schema] = path
+  opts.on("-D", "--write-defaults", "Write default values.") do
+    options[:write_defaults] = true
   end
 
   opts.on("-h", "--help", "Prints help") do

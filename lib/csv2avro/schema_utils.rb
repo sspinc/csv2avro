@@ -19,5 +19,11 @@ class CSV2Avro
 
       (primitive_fields + union_fields)
     end
+
+    def defaults_hash
+      Hash[
+        schema.fields.map{ |field| [field.name, field.default] }
+      ]
+    end
   end
 end

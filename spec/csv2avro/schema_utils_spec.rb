@@ -47,4 +47,29 @@ RSpec.describe CSV2Avro::SchemaUtils do
       end
     end
   end
+
+  describe '#defaults_hash' do
+    context 'shema with default values' do
+      let(:schema_string) do
+        {
+          name: 'product',
+          type: 'record',
+          fields: [
+            { name: 'id', type: 'int' },
+            { name: 'category', type: 'string', default: 'unknown' },
+            { name: 'enabled', type: ['boolean', 'null'], default: false }
+          ]
+        }.to_json
+      end
+
+      subject(:schema_utils) do |variable|
+        schema = Avro::Schema.parse(schema_string)
+        CSV2Avro::SchemaUtils.new(schema)
+      end
+
+      it 'should return a hash with the default values' do
+        expect(schema_utils.defaults_hash).to eq({ 'id'=>nil, 'category'=>'unknown', 'enabled'=>false })
+      end
+    end
+  end
 end
