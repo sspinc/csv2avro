@@ -21,15 +21,15 @@ RSpec.describe CSV2Avro::Converter do
         }.to_json
       end
 
-      before do
+      subject(:avro_io) do
         input = StringIO.new(input_string)
         schema = StringIO.new(schema_string)
 
-        @io = CSV2Avro::Converter.new(input, schema, StringIO.new, {}).perform
+        CSV2Avro::Converter.new(input, schema, StringIO.new, {}).perform
       end
 
       it 'should work' do
-        expect(CSV2Avro::Reader.new(@io).perform).to eq(
+        expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
           [{"id"=>1, "name"=>"dresses", "description"=>"Dresses"},
            {"id"=>2, "name"=>"female-tops", "description"=>nil}])
       end
