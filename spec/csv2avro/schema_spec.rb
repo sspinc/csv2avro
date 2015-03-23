@@ -16,12 +16,12 @@ RSpec.describe CSV2Avro::Schema do
         )
       end
 
-      subject(:schema_utils) do
+      subject(:schema) do
         CSV2Avro::Schema.new(schema_io)
       end
 
       it 'should return one array field' do
-        expect(schema_utils.column_names_with_type(:array)).to eq(['image_links'])
+        expect(schema.column_names_with_type(:array)).to eq(['image_links'])
       end
     end
 
@@ -40,7 +40,7 @@ RSpec.describe CSV2Avro::Schema do
         )
       end
 
-      subject(:schema_utils) do
+      subject(:schema) do
         CSV2Avro::Schema.new(schema_io)
       end
 
@@ -66,12 +66,12 @@ RSpec.describe CSV2Avro::Schema do
         )
       end
 
-      subject(:schema_utils) do
+      subject(:schema) do
         CSV2Avro::Schema.new(schema_io)
       end
 
       it 'should return a hash with the field - default value pairs' do
-        expect(schema_utils.defaults_hash).to eq({ 'category'=>'unknown', 'enabled'=>false })
+        expect(schema.defaults_hash).to eq({ 'category'=>'unknown', 'enabled'=>false })
       end
     end
   end
@@ -92,12 +92,12 @@ RSpec.describe CSV2Avro::Schema do
         )
       end
 
-      subject(:schema_utils) do
+      subject(:schema) do
         CSV2Avro::Schema.new(schema_io)
       end
 
       it 'should return a hash with the alias - name mapping' do
-        expect(schema_utils.aliases_hash).to eq({ 'color_id'=>'look_id', 'photo_group_id'=>'look_id' })
+        expect(schema.aliases_hash).to eq({ 'color_id'=>'look_id', 'photo_group_id'=>'look_id' })
       end
     end
   end
