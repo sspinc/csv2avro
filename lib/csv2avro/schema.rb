@@ -1,17 +1,18 @@
 class CSV2Avro
-  class SchemaUtils
-    attr_reader :schema
+  class Schema
+    attr_reader :avro_schema, :schema_io
 
-    def initialize(schema)
-      @schema = schema
+    def initialize(schema_io)
+      @schema_io = schema_io
+      @avro_schema = Avro::Schema.parse(schema_io)
     end
 
     def column_names_with_type(data_type)
-      primitive_fields = schema.fields.select do |field|
+      primitive_fields = avro_schema.fields.select do |field|
         field.type.type_sym == data_type
       end.map(&:name)
 
-      union_fields = schema.fields.select do |field|
+      union_fields = avro_schema.fields.select do |field|
         field.type.type_sym == :union
       end.select do |field|
         field.type.schemas.any? {|schema| schema.type_sym == data_type}
@@ -22,12 +23,19 @@ class CSV2Avro
 
     def defaults_hash
       Hash[
-        schema.fields.map{ |field| [field.name, field.default] }
+        avro_schema.fields.map{ |field| [field.name, field.default] }
       ]
     end
 
     # TODO: Change this when the avro gem starts to support aliases
-    def self.aliases_hash(schema_string)
+    def aliases_hash
+      schema_string = if schema_io.is_a?(StringIO)
+        schema_io.string
+      else
+        schema_io.rewind
+        schema_io.read
+      end
+
       schema_as_json = JSON.parse(schema_string)
 
       Hash[

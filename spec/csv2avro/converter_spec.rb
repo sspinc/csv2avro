@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe CSV2Avro::Converter do
   describe '#perform' do
     context 'schema with string and integer columns' do
-      let(:schema) do
+      let(:schema_io) do
         StringIO.new(
           {
             name: 'categories',
@@ -29,6 +29,7 @@ RSpec.describe CSV2Avro::Converter do
         end
 
         subject(:avro_io) do
+          schema = CSV2Avro::Schema.new(schema_io)
           CSV2Avro::Converter.new(input, schema, StringIO.new, {}).perform
         end
 
@@ -54,6 +55,7 @@ RSpec.describe CSV2Avro::Converter do
         end
 
         subject(:avro_io) do
+          schema = CSV2Avro::Schema.new(schema_io)
           CSV2Avro::Converter.new(input, schema, StringIO.new, { delimiter: "\t" }).perform
         end
 
@@ -69,7 +71,7 @@ RSpec.describe CSV2Avro::Converter do
     end
 
     context 'schema with boolean and array columns' do
-      let(:schema) do
+      let(:schema_io) do
         StringIO.new(
           {
             name: 'categories',
@@ -95,6 +97,7 @@ RSpec.describe CSV2Avro::Converter do
         end
 
         subject(:avro_io) do
+          schema = CSV2Avro::Schema.new(schema_io)
           CSV2Avro::Converter.new(input, schema, StringIO.new, {delimiter: "\t"}).perform
         end
 
@@ -120,6 +123,7 @@ RSpec.describe CSV2Avro::Converter do
         end
 
         subject(:avro_io) do
+          schema = CSV2Avro::Schema.new(schema_io)
           CSV2Avro::Converter.new(input, schema, StringIO.new, { delimiter: "\t", array_delimiter: ';' }).perform
         end
 
@@ -135,7 +139,7 @@ RSpec.describe CSV2Avro::Converter do
     end
 
     context 'shema with default vaules' do
-      let(:schema) do
+      let(:schema_io) do
         StringIO.new(
           {
             name: 'product',
@@ -160,6 +164,7 @@ RSpec.describe CSV2Avro::Converter do
       end
 
       subject(:avro_io) do
+        schema = CSV2Avro::Schema.new(schema_io)
         CSV2Avro::Converter.new(input, schema, StringIO.new, { write_defaults: true }).perform
       end
 
@@ -184,7 +189,7 @@ RSpec.describe CSV2Avro::Converter do
         )
       end
 
-      let(:schema) do
+      let(:schema_io) do
         StringIO.new(
           {
             name: 'product',
@@ -198,6 +203,7 @@ RSpec.describe CSV2Avro::Converter do
       end
 
       subject(:avro_io) do
+        schema = CSV2Avro::Schema.new(schema_io)
         CSV2Avro::Converter.new(input, schema, StringIO.new, {}).perform
       end
 
@@ -212,7 +218,7 @@ RSpec.describe CSV2Avro::Converter do
     end
 
     context 'schema with enum column' do
-      let(:schema) do
+      let(:schema_io) do
         StringIO.new(
           {
             name: 'product',
@@ -243,6 +249,7 @@ RSpec.describe CSV2Avro::Converter do
       end
 
       subject(:avro_io) do
+        schema = CSV2Avro::Schema.new(schema_io)
         CSV2Avro::Converter.new(input, schema, StringIO.new, { write_defaults: true }).perform
       end
 

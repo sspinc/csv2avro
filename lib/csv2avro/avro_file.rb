@@ -4,11 +4,9 @@ class CSV2Avro
   class AvroFile
     attr_reader :avro_io
 
-    def initialize(schema_string, output)
-      schema = Avro::Schema.parse(schema_string)
-      writer = Avro::IO::DatumWriter.new(schema)
-
-      @avro_io = Avro::DataFile::Writer.new(output, writer, schema)
+    def initialize(schema, output)
+      writer = Avro::IO::DatumWriter.new(schema.avro_schema)
+      @avro_io = Avro::DataFile::Writer.new(output, writer, schema.avro_schema)
     end
 
     def writer_schema

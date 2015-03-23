@@ -1,15 +1,14 @@
-require 'csv2avro/schema_utils'
+require 'csv2avro/schema'
 require 'csv2avro/avro_file'
 require 'csv'
 
 class CSV2Avro
   class Converter
-    attr_reader :input, :schema, :output, :csv_options, :converter_options
+    attr_reader :input, :csv_options, :converter_options, :avro, :schema
 
     def initialize(input, schema, output, options)
       @input = input
       @schema = schema
-      @output   = output
 
       @csv_options = {
         :headers => true,
@@ -19,18 +18,17 @@ class CSV2Avro
 
       @csv_options[:col_sep] = options[:delimiter] if options[:delimiter]
       @converter_options = options
+
+      @avro = CSV2Avro::AvroFile.new(schema, output)
+
+      init_header_converter
     end
 
     def perform
-      avro = CSV2Avro::AvroFile.new(schema, output)
-      init_header_converter
+      boolean_columns = schema.column_names_with_type(:boolean)
+      array_columns   = schema.column_names_with_type(:array)
 
-      schama_utils = CSV2Avro::SchemaUtils.new(avro.writer_schema)
-
-      boolean_columns = schama_utils.column_names_with_type(:boolean)
-      array_columns   = schama_utils.column_names_with_type(:array)
-
-      defaults_hash = schama_utils.defaults_hash if converter_options[:write_defaults]
+      defaults_hash = schema.defaults_hash if converter_options[:write_defaults]
 
       CSV.parse(input, csv_options) do |row|
         row_as_hash = row.to_hash
@@ -83,7 +81,7 @@ class CSV2Avro
     end
 
     def init_header_converter
-      aliases_hash = CSV2Avro::SchemaUtils.aliases_hash(schema.string)
+      aliases_hash = schema.aliases_hash
 
       CSV::HeaderConverters[:aliases] = lambda do |header|
           aliases_hash[header] || header
