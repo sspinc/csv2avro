@@ -28,7 +28,7 @@ class CSV2Avro
         md5 = Digest::MD5.base64digest(io.string)
         s3.put_object(bucket: uri.host, key: uri.path[1..-1], body: io, content_md5: md5)
       else
-        File.open(uri.path, 'wb')
+        File.write(uri.path, io.string)
       end
     end
   end
