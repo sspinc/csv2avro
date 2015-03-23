@@ -71,7 +71,7 @@ RSpec.describe CSV2Avro::Schema do
       end
 
       it 'should return a hash with the field - default value pairs' do
-        expect(schema_utils.defaults_hash).to eq({ 'id'=>nil, 'category'=>'unknown', 'enabled'=>false })
+        expect(schema_utils.defaults_hash).to eq({ 'category'=>'unknown', 'enabled'=>false })
       end
     end
   end

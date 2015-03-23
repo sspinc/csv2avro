@@ -23,7 +23,7 @@ class CSV2Avro
 
     def defaults_hash
       Hash[
-        avro_schema.fields.map{ |field| [field.name, field.default] }
+        avro_schema.fields.map{ |field| [field.name, field.default] unless field.default.nil? }.compact
       ]
     end
 
