@@ -27,6 +27,21 @@ class CSV2Avro
       ]
     end
 
+    def types_hash
+      Hash[
+        avro_schema.fields.map do |field|
+          type = if field.type.type_sym == :union
+            # use the primary type
+            field.type.schemas[0].type_sym
+          else
+            field.type.type_sym
+          end
+
+          [field.name, type.to_s]
+        end
+      ]
+    end
+
     # TODO: Change this when the avro gem starts to support aliases
     def aliases_hash
       schema_string = if schema_io.is_a?(StringIO)

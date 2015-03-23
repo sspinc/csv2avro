@@ -76,6 +76,33 @@ RSpec.describe CSV2Avro::Schema do
     end
   end
 
+  describe '#types_hash' do
+    context 'shema with different types' do
+      let(:schema_io) do
+        StringIO.new(
+          {
+            name: 'product',
+            type: 'record',
+            fields: [
+              { name: 'id', type: 'int' },
+              { name: 'category', type: 'string' },
+              { name: 'reviews', type: { type: 'array', items: 'string' }},
+              { name: 'enabled', type: ['boolean', 'null'] }
+            ]
+          }.to_json
+        )
+      end
+
+      subject(:schema) do
+        CSV2Avro::Schema.new(schema_io)
+      end
+
+      it 'should return a hash with the field - default value pairs' do
+        expect(schema.types_hash).to eq({ 'id'=>'int', 'category'=>'string', 'reviews'=>'array', 'enabled'=>'boolean' })
+      end
+    end
+  end
+
 
   describe '#aliases_hash' do
     context 'shema with aliases' do
