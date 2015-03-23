@@ -12,7 +12,6 @@ class CSV2Avro
 
       @csv_options = {
         :headers => true,
-        :converters => :all,
         :skip_blanks => true
       }
 
@@ -25,23 +24,12 @@ class CSV2Avro
     end
 
     def perform
-      boolean_columns = schema.column_names_with_type(:boolean)
-      array_columns   = schema.column_names_with_type(:array)
-
       defaults_hash = schema.defaults_hash if converter_options[:write_defaults]
 
       CSV.parse(input, csv_options) do |row|
         row_as_hash = row.to_hash
 
-        boolean_columns.each do |column|
-          value = row_as_hash[column]
-          row_as_hash[column] = parse_boolean(value) if value
-        end
-
-        array_columns.each do |column|
-          value = row_as_hash[column]
-          row_as_hash[column] = parse_array(value) if value
-        end
+        convert_fields!(row_as_hash)
 
         if converter_options[:write_defaults]
           add_defaults_to_hash!(row_as_hash, defaults_hash)
@@ -55,6 +43,23 @@ class CSV2Avro
     end
 
     private
+
+    def convert_fields!(hash)
+      fields_to_convert = schema.types_hash.select{ |key, value| value != 'string' }
+
+      fields_to_convert.each do |key, value|
+        case value
+        when 'int'
+          hash[key] = Integer(hash[key]) rescue nil
+        when 'float', 'double'
+          hash[key] = Float(hash[key]) rescue nil
+        when 'boolean'
+          hash[key] = parse_boolean(hash[key])
+        when 'array'
+          hash[key] = parse_array(hash[key])
+        end
+      end
+    end
 
     def parse_boolean(value)
       return true  if value == true  || value =~ (/^(true|t|yes|y|1)$/i)
