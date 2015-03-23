@@ -146,8 +146,9 @@ RSpec.describe CSV2Avro::Converter do
             type: 'record',
             fields: [
               { name: 'id', type: 'int' },
-              { name: 'category', type: 'string', default: 'unknown' },
-              { name: 'enabled', type: ['boolean', 'null'], default: false }
+              { name: 'category',  type: 'string', default: 'unknown' },
+              { name: 'size_type', type: 'string', default: 'regular' },
+              { name: 'enabled',   type: ['boolean', 'null'], default: false }
             ]
           }.to_json
         )
@@ -171,8 +172,8 @@ RSpec.describe CSV2Avro::Converter do
       it 'should store the defaults data' do
         expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
           [
-            { 'id'=>1, 'category'=>'dresses', 'enabled'=>true },
-            { 'id'=>2, 'category'=>'unknown', 'enabled'=>false }
+            { 'id'=>1, 'category'=>'dresses', 'size_type'=> 'regular' ,'enabled'=>true },
+            { 'id'=>2, 'category'=>'unknown', 'size_type'=> 'regular' ,'enabled'=>false }
           ]
         )
       end

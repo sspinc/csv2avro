@@ -44,7 +44,7 @@ class CSV2Avro
         end
 
         if converter_options[:write_defaults]
-          row_as_hash = add_defaults_to_hash(row_as_hash, defaults_hash)
+          add_defaults_to_hash!(row_as_hash, defaults_hash)
         end
 
         avro.write(row_as_hash)
@@ -68,16 +68,18 @@ class CSV2Avro
       value.split(delimiter) if value
     end
 
-    def add_defaults_to_hash(hash, defaults_hash)
-      Hash[
-        hash.map do |key, value|
-          if value.nil?
-            [key, defaults_hash[key]]
-          else
-            [key, value]
-          end
-        end
-      ]
+    def add_defaults_to_hash!(hash, defaults_hash)
+      # Add default values to nil cells
+      hash.each do |key, value|
+        hash[key] = defaults_hash[key] if value.nil?
+      end
+
+      #Add default values to missing columns
+      defaults_hash.each  do |key, value|
+        hash[key] = defaults_hash[key]  unless hash.has_key?(key)
+      end
+
+      hash
     end
 
     def init_header_converter
