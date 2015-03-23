@@ -23,7 +23,7 @@ class CSV2Avro
             field.type.type_sym
           end
 
-          [field.name, type.to_s]
+          [field.name, type]
         end
       ]
     end

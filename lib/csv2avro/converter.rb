@@ -49,13 +49,13 @@ class CSV2Avro
 
       fields_to_convert.each do |key, value|
         case value
-        when 'int'
+        when :int
           hash[key] = Integer(hash[key]) rescue nil
-        when 'float', 'double'
+        when :float, :double
           hash[key] = Float(hash[key]) rescue nil
-        when 'boolean'
+        when :boolean
           hash[key] = parse_boolean(hash[key])
-        when 'array'
+        when :array
           hash[key] = parse_array(hash[key])
         end
       end
