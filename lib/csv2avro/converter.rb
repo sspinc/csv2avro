@@ -26,14 +26,16 @@ class CSV2Avro
     def perform
       defaults_hash = schema.defaults_hash if converter_options[:write_defaults]
 
+      fields_to_convert = schema.types_hash.reject{ |key, value| [:string, :enum].include?(value) }
+
       CSV.parse(input, csv_options) do |row|
         row_as_hash = row.to_hash
-
-        convert_fields!(row_as_hash)
 
         if converter_options[:write_defaults]
           add_defaults_to_hash!(row_as_hash, defaults_hash)
         end
+
+        convert_fields!(row_as_hash, fields_to_convert)
 
         avro.write(row_as_hash)
       end
@@ -44,21 +46,21 @@ class CSV2Avro
 
     private
 
-    def convert_fields!(hash)
-      fields_to_convert = schema.types_hash.select{ |key, value| value != 'string' }
-
+    def convert_fields!(hash, fields_to_convert)
       fields_to_convert.each do |key, value|
-        case value
-        when :int
-          hash[key] = Integer(hash[key]) rescue nil
-        when :float, :double
-          hash[key] = Float(hash[key]) rescue nil
-        when :boolean
-          hash[key] = parse_boolean(hash[key])
-        when :array
-          hash[key] = parse_array(hash[key])
-        end
+        hash[key] = case value
+                    when :int
+                      Integer(hash[key]) rescue hash[key]
+                    when :float, :double
+                      Float(hash[key]) rescue hash[key]
+                    when :boolean
+                      parse_boolean(hash[key])
+                    when :array
+                      parse_array(hash[key])
+                    end
       end
+
+      hash
     end
 
     def parse_boolean(value)
@@ -79,7 +81,7 @@ class CSV2Avro
         hash[key] = defaults_hash[key] if value.nil?
       end
 
-      #Add default values to missing columns
+      # Add default values to missing columns
       defaults_hash.each  do |key, value|
         hash[key] = defaults_hash[key]  unless hash.has_key?(key)
       end
