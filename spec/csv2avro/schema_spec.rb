@@ -1,55 +1,6 @@
 require 'spec_helper'
 
 RSpec.describe CSV2Avro::Schema do
-  describe '#column_names_with_type' do
-    context 'shema with an array field' do
-      let(:schema_io) do
-        StringIO.new(
-          {
-            name: 'product',
-            type: 'record',
-            fields: [
-              { name: 'id', type: 'int' },
-              { name: 'image_links', type: [{ type: 'array', items: 'string' }, 'null'] }
-            ]
-          }.to_json
-        )
-      end
-
-      subject(:schema) do
-        CSV2Avro::Schema.new(schema_io)
-      end
-
-      it 'should return one array field' do
-        expect(schema.column_names_with_type(:array)).to eq(['image_links'])
-      end
-    end
-
-    context 'shema with multiple array fields' do
-      let(:schema_io) do
-        StringIO.new(
-          {
-            name: 'product',
-            type: 'record',
-            fields: [
-              { name: 'id', type: 'int' },
-              { name: 'reviews', type: { type: 'array', items: 'string' }},
-              { name: 'image_links', type: [{ type: 'array', items: 'string' }, 'null'] }
-            ]
-          }.to_json
-        )
-      end
-
-      subject(:schema) do
-        CSV2Avro::Schema.new(schema_io)
-      end
-
-      it 'should return multiple array fields' do
-
-      end
-    end
-  end
-
   describe '#defaults_hash' do
     context 'shema with default values' do
       let(:schema_io) do
@@ -102,7 +53,6 @@ RSpec.describe CSV2Avro::Schema do
       end
     end
   end
-
 
   describe '#aliases_hash' do
     context 'shema with aliases' do

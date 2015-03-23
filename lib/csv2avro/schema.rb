@@ -7,20 +7,6 @@ class CSV2Avro
       @avro_schema = Avro::Schema.parse(schema_io)
     end
 
-    def column_names_with_type(data_type)
-      primitive_fields = avro_schema.fields.select do |field|
-        field.type.type_sym == data_type
-      end.map(&:name)
-
-      union_fields = avro_schema.fields.select do |field|
-        field.type.type_sym == :union
-      end.select do |field|
-        field.type.schemas.any? {|schema| schema.type_sym == data_type}
-      end.map(&:name)
-
-      (primitive_fields + union_fields)
-    end
-
     def defaults_hash
       Hash[
         avro_schema.fields.map{ |field| [field.name, field.default] unless field.default.nil? }.compact
