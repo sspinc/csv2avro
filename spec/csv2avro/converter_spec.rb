@@ -243,7 +243,7 @@ RSpec.describe CSV2Avro::Converter do
           csv_string = CSV.generate do |csv|
             csv << %w[id size_type]
             csv << %w[1 regular]
-            csv << %w[2 petite]
+            csv << %W[2 big\sand\stall]
             csv << %w[3 ]
           end
         )
@@ -258,7 +258,7 @@ RSpec.describe CSV2Avro::Converter do
         expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
           [
             { 'id'=>1, 'size_type'=>'regular' },
-            { 'id'=>2, 'size_type'=>'petite' },
+            { 'id'=>2, 'size_type'=>'big_and_tall' },
             { 'id'=>3, 'size_type'=>'regular' }
           ]
         )

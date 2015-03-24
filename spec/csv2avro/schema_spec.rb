@@ -38,7 +38,11 @@ RSpec.describe CSV2Avro::Schema do
               { name: 'id', type: 'int' },
               { name: 'category', type: 'string' },
               { name: 'reviews', type: { type: 'array', items: 'string' }},
-              { name: 'enabled', type: ['boolean', 'null'] }
+              { name: 'enabled', type: ['boolean', 'null'] },
+              { name: 'availability', type: {
+                  type:'enum', name:'availability_values', symbols:['in_stock', 'out_of_stock', 'preorder']
+                }, default: 'in_stock'
+              }
             ]
           }.to_json
         )
@@ -49,7 +53,7 @@ RSpec.describe CSV2Avro::Schema do
       end
 
       it 'should return a hash with the field - default value pairs' do
-        expect(schema.types_hash).to eq({ 'id'=>:int, 'category'=>:string, 'reviews'=>:array, 'enabled'=>:boolean })
+        expect(schema.types_hash).to eq({ 'id'=>:int, 'category'=>:string, 'reviews'=>:array, 'enabled'=>:boolean, 'availability'=>:enum })
       end
     end
   end

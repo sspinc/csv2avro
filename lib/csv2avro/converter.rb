@@ -26,7 +26,7 @@ class CSV2Avro
     def perform
       defaults_hash = schema.defaults_hash if converter_options[:write_defaults]
 
-      fields_to_convert = schema.types_hash.reject{ |key, value| [:string, :enum].include?(value) }
+      fields_to_convert = schema.types_hash.reject{ |key, value| value == :string }
 
       CSV.parse(input, csv_options) do |row|
         row_as_hash = row.to_hash
@@ -57,6 +57,8 @@ class CSV2Avro
                       parse_boolean(hash[key])
                     when :array
                       parse_array(hash[key])
+                    when :enum
+                      hash[key].tr(" ", "_")
                     end
       end
 
