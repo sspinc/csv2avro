@@ -12,7 +12,7 @@ class CSV2Avro
     def read
       case uri.scheme
       when 's3'
-        s3 = Aws::S3::Client.new(region: 'us-east-1')
+        s3 = Aws::S3::Client.new
         resp = s3.get_object(bucket: uri.host, key: uri.path[1..-1])
 
         resp.body.read
@@ -26,7 +26,7 @@ class CSV2Avro
     def write(io)
       case uri.scheme
       when 's3'
-        s3 = Aws::S3::Client.new(region: 'us-east-1')
+        s3 = Aws::S3::Client.new
         md5 = Digest::MD5.base64digest(io.string)
         s3.put_object(bucket: uri.host, key: uri.path[1..-1], body: io, content_md5: md5)
       when 'file'
