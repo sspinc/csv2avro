@@ -1,0 +1,6 @@
+language: ruby
+rvm:
+  - 2.1.5
+notifications:
+  email: false
+  hipchat: 852d9ffe9095a59131fe5bf2a6d891@Data
