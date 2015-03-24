@@ -15,9 +15,9 @@ class CSV2Avro
         s3 = Aws::S3::Client.new(region: 'us-east-1')
         resp = s3.get_object(bucket: uri.host, key: uri.path[1..-1])
 
-        resp.body
+        resp.body.read
       when 'file'
-        File.open(uri.path, 'r')
+        File.open(uri.path, 'r').read
       else
         raise Exception.new("Unsupported schema on read: '#{uri}'")
       end

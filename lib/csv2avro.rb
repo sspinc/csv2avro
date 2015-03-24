@@ -3,13 +3,14 @@ require 'csv2avro/storage'
 require 'csv2avro/version'
 
 class CSV2Avro
-  def convert(input_path, output_path, options)
-    data_io = Storage.new(input_path).read
-    schema_io = Storage.new(options[:schema]).read
+  def convert(input_uri, output_uri, options)
+    schema_uri = options.delete(:schema)
 
-    schema = CSV2Avro::Schema.new(schema_io)
-    avro_io = Converter.new(data_io, schema, StringIO.new, options).perform
+    input = Storage.new(input_uri)
+    schema = CSV2Avro::Schema.new(Storage.new(schema_uri)) if schema_uri
 
-    Storage.new(output_path).write(avro_io)
+    converter = Converter.new(input, options, schema: schema)
+
+    Storage.new(output_uri).write(converter.read)
   end
 end

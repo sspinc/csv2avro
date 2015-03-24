@@ -12,7 +12,7 @@ class CSV2Avro
       end
     end
 
-    def perform
+    def read
       dr = Avro::DataFile::Reader.new(io, @reader)
 
       rows = []

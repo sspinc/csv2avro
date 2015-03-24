@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe CSV2Avro::Converter do
-  describe '#perform' do
+  describe '#read' do
     context 'schema with string and integer columns' do
       let(:schema_io) do
         StringIO.new(
@@ -28,13 +28,13 @@ RSpec.describe CSV2Avro::Converter do
             )
         end
 
-        subject(:avro_io) do
+        subject(:converted_data) do
           schema = CSV2Avro::Schema.new(schema_io)
-          CSV2Avro::Converter.new(input, schema, StringIO.new, {}).perform
+          CSV2Avro::Converter.new(input, {}, schema: schema).read
         end
 
         it 'should store the data with the given schema' do
-          expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+          expect(CSV2Avro::Reader.new(converted_data).read).to eq(
             [
               { 'id'=>1, 'name'=>'dresses',     'description'=>'Dresses' },
               { 'id'=>2, 'name'=>'female-tops', 'description'=>nil }
@@ -54,13 +54,13 @@ RSpec.describe CSV2Avro::Converter do
           )
         end
 
-        subject(:avro_io) do
+        subject(:converted_data) do
           schema = CSV2Avro::Schema.new(schema_io)
-          CSV2Avro::Converter.new(input, schema, StringIO.new, { delimiter: "\t" }).perform
+          CSV2Avro::Converter.new(input, { delimiter: "\t" }, schema: schema).read
         end
 
         it 'should store the data with the given schema' do
-          expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+          expect(CSV2Avro::Reader.new(converted_data).read).to eq(
             [
               { 'id'=>1, 'name'=>'dresses',     'description'=>'Dresses' },
               { 'id'=>2, 'name'=>'female-tops', 'description'=>nil }
@@ -96,13 +96,13 @@ RSpec.describe CSV2Avro::Converter do
           )
         end
 
-        subject(:avro_io) do
+        subject(:converted_data) do
           schema = CSV2Avro::Schema.new(schema_io)
-          CSV2Avro::Converter.new(input, schema, StringIO.new, {delimiter: "\t"}).perform
+          CSV2Avro::Converter.new(input, {delimiter: "\t"}, schema: schema).read
         end
 
         it 'should store the data with the given schema' do
-          expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+          expect(CSV2Avro::Reader.new(converted_data).read).to eq(
             [
               { 'id'=>1, 'enabled'=>true,  'image_links'=>['http://www.images.com/dresses.jpeg'] },
               { 'id'=>2, 'enabled'=>false, 'image_links'=>['http://www.images.com/bras1.jpeg', 'http://www.images.com/bras2.jpeg'] }
@@ -122,13 +122,13 @@ RSpec.describe CSV2Avro::Converter do
           )
         end
 
-        subject(:avro_io) do
+        subject(:converted_data) do
           schema = CSV2Avro::Schema.new(schema_io)
-          CSV2Avro::Converter.new(input, schema, StringIO.new, { delimiter: "\t", array_delimiter: ';' }).perform
+          CSV2Avro::Converter.new(input, { delimiter: "\t", array_delimiter: ';' }, schema: schema).read
         end
 
         it 'should store the data with the given schema' do
-          expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+          expect(CSV2Avro::Reader.new(converted_data).read).to eq(
             [
               { 'id'=>1, 'enabled'=>true,  'image_links'=>['http://www.images.com/dresses.jpeg'] },
               { 'id'=>2, 'enabled'=>false, 'image_links'=>['http://www.images.com/bras1.jpeg', 'http://www.images.com/bras2.jpeg'] }
@@ -164,13 +164,13 @@ RSpec.describe CSV2Avro::Converter do
         )
       end
 
-      subject(:avro_io) do
+      subject(:converted_data) do
         schema = CSV2Avro::Schema.new(schema_io)
-        CSV2Avro::Converter.new(input, schema, StringIO.new, { write_defaults: true }).perform
+        CSV2Avro::Converter.new(input, { write_defaults: true }, schema: schema).read
       end
 
       it 'should store the defaults data' do
-        expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+        expect(CSV2Avro::Reader.new(converted_data).read).to eq(
           [
             { 'id'=>1, 'category'=>'dresses', 'size_type'=> 'regular' ,'enabled'=>true },
             { 'id'=>2, 'category'=>'unknown', 'size_type'=> 'regular' ,'enabled'=>false }
@@ -203,13 +203,13 @@ RSpec.describe CSV2Avro::Converter do
         )
       end
 
-      subject(:avro_io) do
+      subject(:converted_data) do
         schema = CSV2Avro::Schema.new(schema_io)
-        CSV2Avro::Converter.new(input, schema, StringIO.new, {}).perform
+        CSV2Avro::Converter.new(input, {}, schema: schema).read
       end
 
       it 'should work' do
-        expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+        expect(CSV2Avro::Reader.new(converted_data).read).to eq(
           [
             {'id'=>1, 'look_id'=>'1_red'},
             {'id'=>2, 'look_id'=>'2_blue'}
@@ -249,13 +249,13 @@ RSpec.describe CSV2Avro::Converter do
         )
       end
 
-      subject(:avro_io) do
+      subject(:converted_data) do
         schema = CSV2Avro::Schema.new(schema_io)
-        CSV2Avro::Converter.new(input, schema, StringIO.new, { write_defaults: true }).perform
+        CSV2Avro::Converter.new(input, { write_defaults: true }, schema: schema).read
       end
 
       it 'should store the data with the given schema' do
-        expect(CSV2Avro::Reader.new(avro_io).perform).to eq(
+        expect(CSV2Avro::Reader.new(converted_data).read).to eq(
           [
             { 'id'=>1, 'size_type'=>'regular' },
             { 'id'=>2, 'size_type'=>'big_and_tall' },

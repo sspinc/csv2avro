@@ -1,10 +1,10 @@
 class CSV2Avro
   class Schema
-    attr_reader :avro_schema, :schema_io
+    attr_reader :avro_schema, :schema_string
 
-    def initialize(schema_io)
-      @schema_io = schema_io
-      @avro_schema = Avro::Schema.parse(schema_io)
+    def initialize(schema_storage)
+      @schema_string = schema_storage.read
+      @avro_schema = Avro::Schema.parse(schema_string)
     end
 
     def defaults_hash
@@ -30,9 +30,7 @@ class CSV2Avro
 
     # TODO: Change this when the avro gem starts to support aliases
     def aliases_hash
-      schema_io.rewind
-
-      schema_as_json = JSON.parse(schema_io.read)
+      schema_as_json = JSON.parse(schema_string)
 
       Hash[
         schema_as_json['fields'].select{ |field| field['aliases'] }.flat_map do |field|

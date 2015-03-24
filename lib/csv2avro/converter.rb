@@ -6,8 +6,8 @@ class CSV2Avro
   class Converter
     attr_reader :input, :csv_options, :converter_options, :avro, :schema
 
-    def initialize(input, schema, output, options)
-      @input = input
+    def initialize(input, options, schema: schema)
+      @input = input.read
       @schema = schema
 
       @csv_options = {
@@ -18,12 +18,12 @@ class CSV2Avro
       @csv_options[:col_sep] = options[:delimiter] if options[:delimiter]
       @converter_options = options
 
-      @avro = CSV2Avro::AvroFile.new(schema, output)
+      @avro = CSV2Avro::AvroFile.new(schema)
 
       init_header_converter
     end
 
-    def perform
+    def read
       defaults_hash = schema.defaults_hash if converter_options[:write_defaults]
 
       fields_to_convert = schema.types_hash.reject{ |key, value| value == :string }
