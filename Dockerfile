@@ -6,8 +6,9 @@ RUN bundle config --global frozen 1
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-COPY Gemfile* *.gemspec /usr/src/app/
-COPY lib/csv2avro/version.rb /usr/src/app/lib/csv2avro/version.rb
+COPY Gemfile csv2avro.gemspec /usr/src/app/
+COPY Gemfile.lock /usr/src/app/
+
 RUN bundle install
 
 COPY . /usr/src/app

@@ -1,11 +1,10 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'csv2avro/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "csv2avro"
-  spec.version       = CSV2Avro::VERSION
+  spec.version       = "0.1.0"
   spec.authors       = ["Peter Ableda"]
   spec.email         = ["scotty@secretsaucepartners.com"]
   spec.summary       = %q{Convert CSV files to Avro}
