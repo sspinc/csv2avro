@@ -3,10 +3,13 @@ require 'avro'
 class CSV2Avro
   class AvroFile
     attr_reader :avro_io
+    attr_accessor :bad_rows
 
     def initialize(schema)
       writer = Avro::IO::DatumWriter.new(schema.avro_schema)
       @avro_io = Avro::DataFile::Writer.new(StringIO.new, writer, schema.avro_schema)
+
+      @bad_rows = StringIO.new
     end
 
     def writer_schema
@@ -18,7 +21,11 @@ class CSV2Avro
     end
 
     def write(hash)
-      avro_io << hash
+      begin
+        avro_io << hash
+      rescue Exception
+        bad_rows << hash.to_json + "\n"
+      end
     end
 
     def flush

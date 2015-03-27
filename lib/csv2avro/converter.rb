@@ -24,6 +24,14 @@ class CSV2Avro
     end
 
     def read
+      avro.io
+    end
+
+    def read_bad_rows
+      avro.bad_rows
+    end
+
+    def perform
       defaults_hash = schema.defaults_hash if converter_options[:write_defaults]
 
       fields_to_convert = schema.types_hash.reject{ |key, value| value == :string }
@@ -41,7 +49,6 @@ class CSV2Avro
       end
 
       avro.flush
-      avro.io
     end
 
     private

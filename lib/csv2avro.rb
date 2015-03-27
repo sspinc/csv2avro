@@ -10,7 +10,9 @@ class CSV2Avro
     schema = CSV2Avro::Schema.new(Storage.new(schema_uri)) if schema_uri
 
     converter = Converter.new(input, options, schema: schema)
+    converter.perform
 
     Storage.new(output_uri).write(converter.read)
+    Storage.new(output_uri + ".bad_rows").write(converter.read_bad_rows)
   end
 end

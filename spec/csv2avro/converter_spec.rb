@@ -30,7 +30,9 @@ RSpec.describe CSV2Avro::Converter do
 
         subject(:converted_data) do
           schema = CSV2Avro::Schema.new(schema_io)
-          CSV2Avro::Converter.new(input, {}, schema: schema).read
+          converter = CSV2Avro::Converter.new(input, {}, schema: schema)
+          converter.perform
+          converter.read
         end
 
         it 'should store the data with the given schema' do
@@ -56,7 +58,9 @@ RSpec.describe CSV2Avro::Converter do
 
         subject(:converted_data) do
           schema = CSV2Avro::Schema.new(schema_io)
-          CSV2Avro::Converter.new(input, { delimiter: "\t" }, schema: schema).read
+          converter = CSV2Avro::Converter.new(input, { delimiter: "\t" }, schema: schema)
+          converter.perform
+          converter.read
         end
 
         it 'should store the data with the given schema' do
@@ -98,7 +102,9 @@ RSpec.describe CSV2Avro::Converter do
 
         subject(:converted_data) do
           schema = CSV2Avro::Schema.new(schema_io)
-          CSV2Avro::Converter.new(input, {delimiter: "\t"}, schema: schema).read
+          converter = CSV2Avro::Converter.new(input, {delimiter: "\t"}, schema: schema)
+          converter.perform
+          converter.read
         end
 
         it 'should store the data with the given schema' do
@@ -124,7 +130,9 @@ RSpec.describe CSV2Avro::Converter do
 
         subject(:converted_data) do
           schema = CSV2Avro::Schema.new(schema_io)
-          CSV2Avro::Converter.new(input, { delimiter: "\t", array_delimiter: ';' }, schema: schema).read
+          converter = CSV2Avro::Converter.new(input, { delimiter: "\t", array_delimiter: ';' }, schema: schema)
+          converter.perform
+          converter.read
         end
 
         it 'should store the data with the given schema' do
@@ -166,7 +174,9 @@ RSpec.describe CSV2Avro::Converter do
 
       subject(:converted_data) do
         schema = CSV2Avro::Schema.new(schema_io)
-        CSV2Avro::Converter.new(input, { write_defaults: true }, schema: schema).read
+        converter = CSV2Avro::Converter.new(input, { write_defaults: true }, schema: schema)
+        converter.perform
+        converter.read
       end
 
       it 'should store the defaults data' do
@@ -205,7 +215,9 @@ RSpec.describe CSV2Avro::Converter do
 
       subject(:converted_data) do
         schema = CSV2Avro::Schema.new(schema_io)
-        CSV2Avro::Converter.new(input, {}, schema: schema).read
+        converter = CSV2Avro::Converter.new(input, {}, schema: schema)
+        converter.perform
+        converter.read
       end
 
       it 'should work' do
@@ -251,7 +263,9 @@ RSpec.describe CSV2Avro::Converter do
 
       subject(:converted_data) do
         schema = CSV2Avro::Schema.new(schema_io)
-        CSV2Avro::Converter.new(input, { write_defaults: true }, schema: schema).read
+        converter = CSV2Avro::Converter.new(input, { write_defaults: true }, schema: schema)
+        converter.perform
+        converter.read
       end
 
       it 'should store the data with the given schema' do
