@@ -27,10 +27,10 @@ class CSV2Avro
       case uri.scheme
       when 's3'
         s3 = Aws::S3::Client.new
-        md5 = Digest::MD5.base64digest(io.string)
+        md5 = Digest::MD5.base64digest(io)
         s3.put_object(bucket: uri.host, key: uri.path[1..-1], body: io, content_md5: md5)
       when 'file'
-        File.write(uri.path, io.string)
+        File.write(uri.path, io)
       else
         raise Exception.new("Unsupported schema on write: '#{uri}'")
       end

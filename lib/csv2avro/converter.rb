@@ -4,11 +4,12 @@ require 'csv'
 
 class CSV2Avro
   class Converter
-    attr_reader :input, :csv_options, :converter_options, :avro, :schema
+    attr_reader :reader, :writer, :csv_options, :converter_options, :schema
 
-    def initialize(input, options, schema: schema)
-      @input = input.read
+    def initialize(reader, writer, options, schema: schema)
+      @reader = reader
       @schema = schema
+      @writer = writer
 
       @csv_options = {
         :headers => true,
@@ -18,25 +19,15 @@ class CSV2Avro
       @csv_options[:col_sep] = options[:delimiter] if options[:delimiter]
       @converter_options = options
 
-      @avro = CSV2Avro::AvroWriter.new(schema)
-
       init_header_converter
     end
 
-    def read
-      avro.io
-    end
-
-    def read_bad_rows
-      avro.bad_rows
-    end
-
-    def perform
+    def convert
       defaults_hash = schema.defaults_hash if converter_options[:write_defaults]
 
       fields_to_convert = schema.types_hash.reject{ |key, value| value == :string }
 
-      CSV.parse(input, csv_options) do |row|
+      CSV.parse(reader.read, csv_options) do |row|
         row_as_hash = row.to_hash
 
         if converter_options[:write_defaults]
@@ -45,10 +36,10 @@ class CSV2Avro
 
         convert_fields!(row_as_hash, fields_to_convert)
 
-        avro.write(row_as_hash)
+        writer.write(row_as_hash)
       end
 
-      avro.flush
+      writer.flush
     end
 
     private

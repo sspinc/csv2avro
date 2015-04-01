@@ -1,39 +1,30 @@
 require 'avro'
+require 'forwardable'
 
 class CSV2Avro
   class AvroWriter
-    attr_reader :avro_io
-    attr_accessor :bad_rows
+    extend Forwardable
 
-    def initialize(schema)
-      writer = Avro::IO::DatumWriter.new(schema.avro_schema)
-      @avro_io = Avro::DataFile::Writer.new(StringIO.new, writer, schema.avro_schema)
+    attr_reader :avro_writer
 
-      @bad_rows = StringIO.new
+    def_delegators :'avro_writer.writer', :seek, :read, :eof?
+    def_delegators :avro_writer, :flush, :close
+
+    def initialize(writer, schema)
+      datum_writer = Avro::IO::DatumWriter.new(schema.avro_schema)
+      @avro_writer = Avro::DataFile::Writer.new(writer, datum_writer, schema.avro_schema)
     end
 
     def writer_schema
-      avro_io.datum_writer.writers_schema
-    end
-
-    def io
-      avro_io.encoder.writer
+      avro_writer.datum_writer.writers_schema
     end
 
     def write(hash)
       begin
-        avro_io << hash
+        avro_writer << hash
       rescue Exception
-        bad_rows << hash.to_json + "\n"
+        p "exception occured"
       end
-    end
-
-    def flush
-      avro_io.flush
-    end
-
-    def close
-      avro_io.close
     end
   end
 end

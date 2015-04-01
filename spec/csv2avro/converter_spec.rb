@@ -18,7 +18,7 @@ RSpec.describe CSV2Avro::Converter do
       end
 
       context 'separated with commas (csv)' do
-        let(:input) do
+        let(:reader) do
           StringIO.new(
             csv_string = CSV.generate do |csv|
               csv << %w[id name description]
@@ -30,9 +30,11 @@ RSpec.describe CSV2Avro::Converter do
 
         subject(:converted_data) do
           schema = CSV2Avro::Schema.new(schema_io)
-          converter = CSV2Avro::Converter.new(input, {}, schema: schema)
-          converter.perform
-          converter.read
+          writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
+
+          CSV2Avro::Converter.new(reader, writer, {}, schema: schema).convert
+
+          writer
         end
 
         it 'should store the data with the given schema' do
@@ -46,7 +48,7 @@ RSpec.describe CSV2Avro::Converter do
       end
 
       context 'separated with tabs (tsv)' do
-        let(:input) do
+        let(:reader) do
           StringIO.new(
             csv_string = CSV.generate({col_sep: "\t"}) do |csv|
               csv << %w[id name description]
@@ -58,9 +60,11 @@ RSpec.describe CSV2Avro::Converter do
 
         subject(:converted_data) do
           schema = CSV2Avro::Schema.new(schema_io)
-          converter = CSV2Avro::Converter.new(input, { delimiter: "\t" }, schema: schema)
-          converter.perform
-          converter.read
+          writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
+
+          CSV2Avro::Converter.new(reader, writer, { delimiter: "\t" }, schema: schema).convert
+
+          writer
         end
 
         it 'should store the data with the given schema' do
@@ -90,7 +94,7 @@ RSpec.describe CSV2Avro::Converter do
       end
 
       context 'separated with commas (default)' do
-        let(:input) do
+        let(:reader) do
           StringIO.new(
             csv_string = CSV.generate({col_sep: "\t"}) do |csv|
               csv << %w[id enabled image_links]
@@ -102,9 +106,11 @@ RSpec.describe CSV2Avro::Converter do
 
         subject(:converted_data) do
           schema = CSV2Avro::Schema.new(schema_io)
-          converter = CSV2Avro::Converter.new(input, {delimiter: "\t"}, schema: schema)
-          converter.perform
-          converter.read
+          writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
+
+          CSV2Avro::Converter.new(reader, writer, { delimiter: "\t" }, schema: schema).convert
+
+          writer
         end
 
         it 'should store the data with the given schema' do
@@ -118,7 +124,7 @@ RSpec.describe CSV2Avro::Converter do
       end
 
       context 'separated with semicolons' do
-        let(:input) do
+        let(:reader) do
           StringIO.new(
             csv_string = CSV.generate({col_sep: "\t"}) do |csv|
               csv << %w[id enabled image_links]
@@ -130,9 +136,11 @@ RSpec.describe CSV2Avro::Converter do
 
         subject(:converted_data) do
           schema = CSV2Avro::Schema.new(schema_io)
-          converter = CSV2Avro::Converter.new(input, { delimiter: "\t", array_delimiter: ';' }, schema: schema)
-          converter.perform
-          converter.read
+          writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
+
+          CSV2Avro::Converter.new(reader, writer, { delimiter: "\t", array_delimiter: ';' }, schema: schema).convert
+
+          writer
         end
 
         it 'should store the data with the given schema' do
@@ -162,7 +170,7 @@ RSpec.describe CSV2Avro::Converter do
         )
       end
 
-      let(:input) do
+      let(:reader) do
         StringIO.new(
           csv_string = CSV.generate do |csv|
             csv << %w[id category enabled]
@@ -174,9 +182,11 @@ RSpec.describe CSV2Avro::Converter do
 
       subject(:converted_data) do
         schema = CSV2Avro::Schema.new(schema_io)
-        converter = CSV2Avro::Converter.new(input, { write_defaults: true }, schema: schema)
-        converter.perform
-        converter.read
+        writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
+
+        CSV2Avro::Converter.new(reader, writer, { write_defaults: true }, schema: schema).convert
+
+        writer
       end
 
       it 'should store the defaults data' do
@@ -190,7 +200,7 @@ RSpec.describe CSV2Avro::Converter do
     end
 
     context 'schema with aliased fields' do
-      let(:input) do
+      let(:reader) do
         StringIO.new(
           csv_string = CSV.generate do |csv|
             csv << %w[id color_id]
@@ -215,9 +225,11 @@ RSpec.describe CSV2Avro::Converter do
 
       subject(:converted_data) do
         schema = CSV2Avro::Schema.new(schema_io)
-        converter = CSV2Avro::Converter.new(input, {}, schema: schema)
-        converter.perform
-        converter.read
+        writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
+
+        CSV2Avro::Converter.new(reader, writer, { }, schema: schema).convert
+
+        writer
       end
 
       it 'should work' do
@@ -250,7 +262,7 @@ RSpec.describe CSV2Avro::Converter do
         )
       end
 
-      let(:input) do
+      let(:reader) do
         StringIO.new(
           csv_string = CSV.generate do |csv|
             csv << %w[id size_type]
@@ -263,9 +275,11 @@ RSpec.describe CSV2Avro::Converter do
 
       subject(:converted_data) do
         schema = CSV2Avro::Schema.new(schema_io)
-        converter = CSV2Avro::Converter.new(input, { write_defaults: true }, schema: schema)
-        converter.perform
-        converter.read
+        writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
+
+        CSV2Avro::Converter.new(reader, writer, { write_defaults: true }, schema: schema).convert
+
+        writer
       end
 
       it 'should store the data with the given schema' do
