@@ -1,5 +1,5 @@
 require 'csv2avro/schema'
-require 'csv2avro/avro_file'
+require 'csv2avro/avro_writer'
 require 'csv'
 
 class CSV2Avro
@@ -18,7 +18,7 @@ class CSV2Avro
       @csv_options[:col_sep] = options[:delimiter] if options[:delimiter]
       @converter_options = options
 
-      @avro = CSV2Avro::AvroFile.new(schema)
+      @avro = CSV2Avro::AvroWriter.new(schema)
 
       init_header_converter
     end

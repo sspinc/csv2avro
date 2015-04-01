@@ -1,7 +1,7 @@
 require 'avro'
 
 class CSV2Avro
-  class AvroFile
+  class AvroWriter
     attr_reader :avro_io
     attr_accessor :bad_rows
 
