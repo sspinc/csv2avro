@@ -10,10 +10,11 @@ class CSV2Avro
     schema = CSV2Avro::Schema.new(Storage.new(schema_uri)) if schema_uri
 
     writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
-    Converter.new(reader, writer, options, schema: schema).convert
+    bad_rows_writer = StringIO.new
+
+    Converter.new(reader, writer, bad_rows_writer, options, schema: schema).convert
 
     Storage.new(output_uri).write(writer.avro_writer.writer.string)
-
-    true
+    Storage.new(output_uri + '.bad').write(bad_rows_writer.string) if bad_rows_writer.string != ''
   end
 end

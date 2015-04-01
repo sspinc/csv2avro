@@ -20,11 +20,7 @@ class CSV2Avro
     end
 
     def write(hash)
-      begin
-        avro_writer << hash
-      rescue Exception
-        p "exception occured"
-      end
+      avro_writer << hash
     end
   end
 end

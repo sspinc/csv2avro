@@ -32,7 +32,7 @@ RSpec.describe CSV2Avro::Converter do
           schema = CSV2Avro::Schema.new(schema_io)
           writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
 
-          CSV2Avro::Converter.new(reader, writer, {}, schema: schema).convert
+          CSV2Avro::Converter.new(reader, writer, StringIO.new, {}, schema: schema).convert
 
           writer
         end
@@ -62,7 +62,7 @@ RSpec.describe CSV2Avro::Converter do
           schema = CSV2Avro::Schema.new(schema_io)
           writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
 
-          CSV2Avro::Converter.new(reader, writer, { delimiter: "\t" }, schema: schema).convert
+          CSV2Avro::Converter.new(reader, writer, StringIO.new, { delimiter: "\t" }, schema: schema).convert
 
           writer
         end
@@ -108,7 +108,7 @@ RSpec.describe CSV2Avro::Converter do
           schema = CSV2Avro::Schema.new(schema_io)
           writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
 
-          CSV2Avro::Converter.new(reader, writer, { delimiter: "\t" }, schema: schema).convert
+          CSV2Avro::Converter.new(reader, writer, StringIO.new, { delimiter: "\t" }, schema: schema).convert
 
           writer
         end
@@ -138,7 +138,7 @@ RSpec.describe CSV2Avro::Converter do
           schema = CSV2Avro::Schema.new(schema_io)
           writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
 
-          CSV2Avro::Converter.new(reader, writer, { delimiter: "\t", array_delimiter: ';' }, schema: schema).convert
+          CSV2Avro::Converter.new(reader, writer, StringIO.new, { delimiter: "\t", array_delimiter: ';' }, schema: schema).convert
 
           writer
         end
@@ -184,7 +184,7 @@ RSpec.describe CSV2Avro::Converter do
         schema = CSV2Avro::Schema.new(schema_io)
         writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
 
-        CSV2Avro::Converter.new(reader, writer, { write_defaults: true }, schema: schema).convert
+        CSV2Avro::Converter.new(reader, writer, StringIO.new, { write_defaults: true }, schema: schema).convert
 
         writer
       end
@@ -227,7 +227,7 @@ RSpec.describe CSV2Avro::Converter do
         schema = CSV2Avro::Schema.new(schema_io)
         writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
 
-        CSV2Avro::Converter.new(reader, writer, { }, schema: schema).convert
+        CSV2Avro::Converter.new(reader, writer, StringIO.new, { }, schema: schema).convert
 
         writer
       end
@@ -277,7 +277,7 @@ RSpec.describe CSV2Avro::Converter do
         schema = CSV2Avro::Schema.new(schema_io)
         writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
 
-        CSV2Avro::Converter.new(reader, writer, { write_defaults: true }, schema: schema).convert
+        CSV2Avro::Converter.new(reader, writer, StringIO.new, { write_defaults: true }, schema: schema).convert
 
         writer
       end
@@ -289,6 +289,56 @@ RSpec.describe CSV2Avro::Converter do
             { 'id'=>2, 'size_type'=>'big_and_tall' },
             { 'id'=>3, 'size_type'=>'regular' }
           ]
+        )
+      end
+    end
+
+    context 'data with bad rows' do
+      let(:schema_io) do
+        StringIO.new(
+          {
+            name: 'categories',
+            type: 'record',
+            fields: [
+              { name: 'id', type: 'int' },
+              { name: 'name', type: 'string' },
+              { name: 'description', type: ['string', 'null'] }
+            ]
+          }.to_json
+        )
+      end
+
+      let(:reader) do
+        StringIO.new(
+          csv_string = CSV.generate do |csv|
+            csv << %w[id name description]
+            csv << ['1', nil, 'dresses']
+            csv << %w[2 female-tops]
+          end
+          )
+      end
+
+      let(:schema) { CSV2Avro::Schema.new(schema_io) }
+
+      let(:writer) { CSV2Avro::AvroWriter.new(StringIO.new, schema) }
+
+      let(:bad_rows_writer) { StringIO.new }
+
+      before do
+        CSV2Avro::Converter.new(reader, writer, bad_rows_writer, {}, schema: schema).convert
+      end
+
+      it 'should store the data with the given schema' do
+        expect(CSV2Avro::Reader.new(writer).read).to eq(
+          [
+            { 'id'=>2, 'name'=>'female-tops', 'description'=>nil }
+          ]
+        )
+      end
+
+      it 'should have the bad data in the original form' do
+        expect(bad_rows_writer.string).to eq(
+          "1,,dresses\n"
         )
       end
     end
