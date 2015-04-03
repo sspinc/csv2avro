@@ -301,7 +301,7 @@ RSpec.describe CSV2Avro::Converter do
             type: 'record',
             fields: [
               { name: 'id', type: 'int' },
-              { name: 'name', type: 'string' },
+              { name: 'name', type: 'string', aliases: ['title'] },
               { name: 'description', type: ['string', 'null'] }
             ]
           }.to_json
@@ -311,9 +311,11 @@ RSpec.describe CSV2Avro::Converter do
       let(:reader) do
         StringIO.new(
           csv_string = CSV.generate do |csv|
-            csv << %w[id name description]
+            csv << %w[id title description]
             csv << ['1', nil, 'dresses']
             csv << %w[2 female-tops]
+            csv << %w[3 female-bottoms]
+            csv << ['4', nil, 'female-shoes']
           end
           )
       end
@@ -331,14 +333,15 @@ RSpec.describe CSV2Avro::Converter do
       it 'should store the data with the given schema' do
         expect(CSV2Avro::Reader.new(writer).read).to eq(
           [
-            { 'id'=>2, 'name'=>'female-tops', 'description'=>nil }
+            { 'id'=>2, 'name'=>'female-tops', 'description'=>nil },
+            { 'id'=>3, 'name'=>'female-bottoms', 'description'=>nil }
           ]
         )
       end
 
       it 'should have the bad data in the original form' do
         expect(bad_rows_writer.string).to eq(
-          "1,,dresses\n"
+          "id,title,description\n1,,dresses\n4,,female-shoes\n"
         )
       end
     end

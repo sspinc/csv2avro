@@ -4,23 +4,26 @@ require 'csv'
 
 class CSV2Avro
   class Converter
-    attr_reader :writer, :bad_rows_writer, :converter_options, :schema, :csv
+    attr_reader :writer, :bad_rows_writer, :schema, :csv, :converter_options, :original_header
 
     def initialize(reader, writer, bad_rows_writer, options, schema: schema)
-      @schema = schema
       @writer = writer
       @bad_rows_writer = bad_rows_writer
+      @schema = schema
 
       init_header_converter
       csv_options = {
         headers: true,
         skip_blanks: true,
+        return_headers: true,
         header_converters: :aliases
       }
 
-      csv_options[:col_sep] = options[:delimiter] if options[:delimiter]
+      csv_options[:col_sep] = options[:delimiter] || ','
 
       @csv = CSV.new(reader, csv_options)
+
+      @original_header = csv.first.fields.join(csv_options[:col_sep]) + "\n"
 
       @converter_options = options
     end
@@ -42,6 +45,10 @@ class CSV2Avro
         begin
           writer.write(row_as_hash)
         rescue Exception
+          if bad_rows_writer.size == 0
+            bad_rows_writer << original_header
+          end
+
           bad_rows_writer << row
         end
       end
