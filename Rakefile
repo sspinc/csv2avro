@@ -1,5 +1,6 @@
 require 'rspec/core/rake_task'
 require 'bundler/gem_tasks'
+require 'bump/tasks'
 
 # Default directory to look in is `/spec`
 # Run with `rake spec`
