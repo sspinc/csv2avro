@@ -20,7 +20,7 @@ class CSV2Avro
 
       csv_options[:col_sep] = options[:delimiter] if options[:delimiter]
 
-      @csv = CSV.new(reader.read, csv_options)
+      @csv = CSV.new(reader, csv_options)
 
       @converter_options = options
     end
