@@ -1,6 +1,5 @@
 require 'csv2avro/converter'
 require 'csv2avro/storage'
-require 'csv2avro/version'
 
 class CSV2Avro
   def convert(input_uri, output_uri, options)

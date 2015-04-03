@@ -8,7 +8,7 @@ options = {}
 OPERATIONS = %w[convert]
 
 option_parser = OptionParser.new do |opts|
-  opts.banner = "Version #{CSV2Avro::VERSION} of CSV2Avro\n" \
+  opts.banner = "Version 0.1.0avro of CSV2Avro\n" \
     "Usage: #{File.basename(__FILE__)} [#{OPERATIONS.join('|')}] [options] [source_path] [target_path]"
 
   opts.on("-s", "--schema SCHEMA", "A file containing the Avro schema. This value is required.") do |path|
