@@ -310,7 +310,7 @@ RSpec.describe CSV2Avro::Converter do
 
       let(:reader) do
         StringIO.new(
-          csv_string = CSV.generate do |csv|
+          csv_string = CSV.generate({col_sep: "\t"}) do |csv|
             csv << %w[id title description]
             csv << ['1', nil, 'dresses']
             csv << %w[2 female-tops]
@@ -327,7 +327,7 @@ RSpec.describe CSV2Avro::Converter do
       let(:bad_rows_writer) { StringIO.new }
 
       before do
-        CSV2Avro::Converter.new(reader, writer, bad_rows_writer, {}, schema: schema).convert
+        CSV2Avro::Converter.new(reader, writer, bad_rows_writer, { delimiter: "\t" }, schema: schema).convert
       end
 
       it 'should store the data with the given schema' do
@@ -341,7 +341,7 @@ RSpec.describe CSV2Avro::Converter do
 
       it 'should have the bad data in the original form' do
         expect(bad_rows_writer.string).to eq(
-          "id,title,description\n1,,dresses\n4,,female-shoes\n"
+          "id\ttitle\tdescription\n1\t\tdresses\n4\t\tfemale-shoes\n"
         )
       end
     end
