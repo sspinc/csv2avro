@@ -71,7 +71,7 @@ class CSV2Avro
                     when :array
                       parse_array(hash[key])
                     when :enum
-                      hash[key].tr(" ", "_")
+                      hash[key].downcase.tr(" ", "_")
                     end
       end
 
