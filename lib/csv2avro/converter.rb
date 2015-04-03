@@ -4,26 +4,27 @@ require 'csv'
 
 class CSV2Avro
   class Converter
-    attr_reader :writer, :bad_rows_writer, :schema, :csv, :converter_options, :original_header
+    attr_reader :writer, :bad_rows_writer, :schema, :csv, :converter_options, :original_header, :column_separator
 
     def initialize(reader, writer, bad_rows_writer, options, schema: schema)
       @writer = writer
       @bad_rows_writer = bad_rows_writer
       @schema = schema
 
+      @column_separator = options[:delimiter] || ','
+
       init_header_converter
       csv_options = {
         headers: true,
         skip_blanks: true,
         return_headers: true,
+        col_sep: column_separator,
         header_converters: :aliases
       }
 
-      csv_options[:col_sep] = options[:delimiter] || ','
-
       @csv = CSV.new(reader, csv_options)
 
-      @original_header = csv.first.fields.join(csv_options[:col_sep]) + "\n"
+      @original_header = deserialize(csv.first.fields)
 
       @converter_options = options
     end
@@ -33,23 +34,23 @@ class CSV2Avro
 
       fields_to_convert = schema.types_hash.reject{ |key, value| value == :string }
 
-      csv.each do |row|
-        row_as_hash = row.to_hash
+      csv.each do |line|
+        row = line.to_hash
 
         if converter_options[:write_defaults]
-          add_defaults_to_hash!(row_as_hash, defaults_hash)
+          add_defaults_to_hash!(row, defaults_hash)
         end
 
-        convert_fields!(row_as_hash, fields_to_convert)
+        convert_fields!(row, fields_to_convert)
 
         begin
-          writer.write(row_as_hash)
+          writer.write(row)
         rescue Exception
           if bad_rows_writer.size == 0
             bad_rows_writer << original_header
           end
 
-          bad_rows_writer << row
+          bad_rows_writer << deserialize(line.fields)
         end
       end
 
@@ -110,6 +111,10 @@ class CSV2Avro
       CSV::HeaderConverters[:aliases] = lambda do |header|
           aliases_hash[header] || header
       end
+    end
+
+    def deserialize(line)
+      line.join(column_separator) + "\n"
     end
   end
 end
