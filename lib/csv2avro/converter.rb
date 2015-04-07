@@ -1,47 +1,61 @@
 require 'csv2avro/schema'
-require 'csv2avro/avro_file'
+require 'csv2avro/avro_writer'
 require 'csv'
 
 class CSV2Avro
   class Converter
-    attr_reader :input, :csv_options, :converter_options, :avro, :schema
+    attr_reader :writer, :bad_rows_writer, :schema, :csv, :converter_options, :original_header, :column_separator
 
-    def initialize(input, options, schema: schema)
-      @input = input.read
+    def initialize(reader, writer, bad_rows_writer, options, schema: schema)
+      @writer = writer
+      @bad_rows_writer = bad_rows_writer
       @schema = schema
 
-      @csv_options = {
-        :headers => true,
-        :skip_blanks => true
-      }
-
-      @csv_options[:col_sep] = options[:delimiter] if options[:delimiter]
-      @converter_options = options
-
-      @avro = CSV2Avro::AvroFile.new(schema)
+      @column_separator = options[:delimiter] || ','
 
       init_header_converter
+      csv_options = {
+        headers: true,
+        skip_blanks: true,
+        return_headers: true,
+        col_sep: column_separator,
+        header_converters: :aliases
+      }
+
+      @csv = CSV.new(reader, csv_options)
+
+      @original_header = deserialize(csv.first.fields)
+
+      @converter_options = options
     end
 
-    def read
+    def convert
       defaults_hash = schema.defaults_hash if converter_options[:write_defaults]
 
       fields_to_convert = schema.types_hash.reject{ |key, value| value == :string }
 
-      CSV.parse(input, csv_options) do |row|
-        row_as_hash = row.to_hash
+      csv.each do |line|
+        row = line.to_hash
 
         if converter_options[:write_defaults]
-          add_defaults_to_hash!(row_as_hash, defaults_hash)
+          add_defaults_to_hash!(row, defaults_hash)
         end
 
-        convert_fields!(row_as_hash, fields_to_convert)
+        convert_fields!(row, fields_to_convert)
 
-        avro.write(row_as_hash)
+        begin
+          writer.write(row)
+        rescue Exception
+          if bad_rows_writer.size == 0
+            bad_rows_writer << original_header
+          end
+
+          bad_rows_writer << deserialize(line.fields)
+        end
       end
 
-      avro.flush
-      avro.io
+      writer.flush
+      bad_rows_writer.flush
     end
 
     private
@@ -58,7 +72,7 @@ class CSV2Avro
                     when :array
                       parse_array(hash[key])
                     when :enum
-                      hash[key].tr(" ", "_")
+                      hash[key].downcase.tr(" ", "_")
                     end
       end
 
@@ -97,8 +111,10 @@ class CSV2Avro
       CSV::HeaderConverters[:aliases] = lambda do |header|
           aliases_hash[header] || header
       end
+    end
 
-      csv_options[:header_converters] = :aliases
+    def deserialize(line)
+      line.join(column_separator) + "\n"
     end
   end
 end
