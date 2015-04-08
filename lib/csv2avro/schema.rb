@@ -2,8 +2,8 @@ class CSV2Avro
   class Schema
     attr_reader :avro_schema, :schema_string
 
-    def initialize(schema_storage)
-      @schema_string = schema_storage.read
+    def initialize(schema)
+      @schema_string = schema.read
       @avro_schema = Avro::Schema.parse(schema_string)
     end
 

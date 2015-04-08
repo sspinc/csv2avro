@@ -6,11 +6,15 @@ class CSV2Avro
   def convert(input_uri, output_uri, options)
     schema_uri = options.delete(:schema)
 
-    input = Storage.new(input_uri)
-    schema = CSV2Avro::Schema.new(Storage.new(schema_uri)) if schema_uri
+    reader = Storage.new(input_uri).open
+    schema = CSV2Avro::Schema.new(Storage.new(schema_uri).open) if schema_uri
 
-    converter = Converter.new(input, options, schema: schema)
+    writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
+    bad_rows_writer = StringIO.new
 
-    Storage.new(output_uri).write(converter.read)
+    Converter.new(reader, writer, bad_rows_writer, options, schema: schema).convert
+
+    Storage.new(output_uri).write(writer.avro_writer.writer.string)
+    Storage.new(output_uri + '.bad').write(bad_rows_writer.string) if bad_rows_writer.string != ''
   end
 end
