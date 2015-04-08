@@ -10,6 +10,11 @@ end
 
 task :default => :spec
 
+task :build do
+  patch_version = CSV2Avro::VERSION
+  %x( ln -f pkg/csv2avro-0.2.0.gem pkg/csv2avro-latest.gem )
+end
+
 namespace :docker do
   desc "Build docker image"
   task :build => 'rake:build' do

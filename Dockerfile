@@ -4,8 +4,8 @@ MAINTAINER Secret Sauce Partners, Inc. <dev@sspinc.io>
 RUN mkdir -p /opt/csv2avro
 WORKDIR /opt/csv2avro
 
-COPY pkg/*.gem /opt/csv2avro/csv2avro.gem
+COPY pkg/csv2avro-latest.gem /opt/csv2avro/csv2avro-latest.gem
 
-RUN gem install csv2avro.gem
+RUN gem install csv2avro-latest.gem
 
 ENTRYPOINT ["csv2avro"]
