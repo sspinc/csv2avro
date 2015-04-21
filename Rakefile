@@ -33,5 +33,7 @@ namespace :docker do
     sh "docker tag -f sspinc/csv2avro:#{patch_version} sspinc/csv2avro:#{major_version}"
 
     sh "docker tag -f sspinc/csv2avro:#{patch_version} sspinc/csv2avro:latest"
+
+    sh "docker push sspinc/csv2avro"
   end
 end
