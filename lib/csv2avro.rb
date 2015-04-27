@@ -1,5 +1,4 @@
 require 'csv2avro/converter'
-require 'csv2avro/storage'
 require 'csv2avro/stream'
 require 'csv2avro/version'
 require 'uri'
