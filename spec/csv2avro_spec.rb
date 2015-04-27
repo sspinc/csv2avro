@@ -2,10 +2,10 @@ require 'spec_helper'
 
 RSpec.describe CSV2Avro do
   describe '#convert' do
-    let(:input_uri) { "./test/data.tsv" }
+    let(:input_uri) { "./spec/support/data.tsv" }
     let(:options) do
       {
-        schema: "./test/schema.avsc",
+        schema: "./spec/support/schema.avsc",
         delimiter: "\t"
       }
     end
@@ -13,7 +13,7 @@ RSpec.describe CSV2Avro do
     subject(:converted_file) do
       CSV2Avro.new(input_uri, options).convert
 
-      File.open(URI("./test/data.tsv.avro").path, 'r')
+      File.open(URI("./spec/support/data.tsv.avro").path, 'r')
     end
 
     it 'should be fine' do
