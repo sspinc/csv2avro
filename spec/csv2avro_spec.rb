@@ -17,7 +17,7 @@ RSpec.describe CSV2Avro do
     end
 
     it 'should be fine' do
-      expect(CSV2Avro::Reader.new(converted_file).read).to eq(
+      expect(AvroReader.new(converted_file).read).to eq(
         [
           { 'id'=>1, 'name'=>'dresses',     'description'=>'Dresses' },
           { 'id'=>2, 'name'=>'female-tops', 'description'=>nil }
