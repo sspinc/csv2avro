@@ -8,7 +8,7 @@ options = {}
 
 option_parser = OptionParser.new do |opts|
   opts.banner = "Version #{CSV2Avro::VERSION} of CSV2Avro\n" \
-    "Usage: #{File.basename(__FILE__)} [options] [source_path] [target_path]"
+    "Usage: #{File.basename(__FILE__)} [options] [file]"
 
   opts.on("-s", "--schema SCHEMA", "A file containing the Avro schema. This value is required.") do |path|
     options[:schema] = path
@@ -38,13 +38,10 @@ end
 
 option_parser.parse!
 
-
-operation = ARGV.shift
 source_path = ARGV.shift
-target_path = ARGV.shift
 
 begin
-  CSV2Avro.convert(source_path, target_path, options)
+  CSV2Avro.new(source_path, options).convert
 rescue ArgumentError => ex
   puts ex.message
 rescue Exception => e

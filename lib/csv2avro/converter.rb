@@ -4,7 +4,7 @@ require 'csv'
 
 class CSV2Avro
   class Converter
-    attr_reader :writer, :bad_rows_writer, :schema, :csv, :converter_options, :original_header, :column_separator
+    attr_reader :writer, :bad_rows_writer, :schema, :reader, :csv_options, :converter_options, :header_row, :column_separator
 
     def initialize(reader, writer, bad_rows_writer, options, schema: schema)
       @writer = writer
@@ -13,18 +13,17 @@ class CSV2Avro
 
       @column_separator = options[:delimiter] || ','
 
+      @reader = reader
+      @header_row = reader.readline.strip
+      header = header_row.split(column_separator)
+
       init_header_converter
-      csv_options = {
-        headers: true,
+      @csv_options = {
+        headers: header,
         skip_blanks: true,
-        return_headers: true,
         col_sep: column_separator,
         header_converters: :aliases
       }
-
-      @csv = CSV.new(reader, csv_options)
-
-      @original_header = deserialize(csv.first.fields)
 
       @converter_options = options
     end
@@ -34,28 +33,29 @@ class CSV2Avro
 
       fields_to_convert = schema.types_hash.reject{ |key, value| value == :string }
 
-      csv.each do |line|
-        row = line.to_hash
+      reader.each_line do |line|
+        CSV.parse(line, csv_options) do |row|
+          row = row.to_hash
 
-        if converter_options[:write_defaults]
-          add_defaults_to_hash!(row, defaults_hash)
-        end
-
-        convert_fields!(row, fields_to_convert)
-
-        begin
-          writer.write(row)
-        rescue Exception
-          if bad_rows_writer.size == 0
-            bad_rows_writer << original_header
+          if converter_options[:write_defaults]
+            add_defaults_to_hash!(row, defaults_hash)
           end
 
-          bad_rows_writer << deserialize(line.fields)
+          convert_fields!(row, fields_to_convert)
+
+          begin
+            writer.write(row)
+            writer.flush
+          rescue Exception
+            if bad_rows_writer.size == 0
+              bad_rows_writer << header_row + "\n"
+            end
+
+            bad_rows_writer << line
+            # bad_rows_writer.flush
+          end
         end
       end
-
-      writer.flush
-      bad_rows_writer.flush
     end
 
     private
@@ -111,10 +111,6 @@ class CSV2Avro
       CSV::HeaderConverters[:aliases] = lambda do |header|
           aliases_hash[header] || header
       end
-    end
-
-    def deserialize(line)
-      line.join(column_separator) + "\n"
     end
   end
 end

@@ -1,20 +1,44 @@
 require 'csv2avro/converter'
 require 'csv2avro/storage'
+require 'csv2avro/stream'
 require 'csv2avro/version'
+require 'uri'
 
 class CSV2Avro
-  def convert(input_uri, output_uri, options)
-    schema_uri = options.delete(:schema)
+  attr_reader :input_uri, :schema_uri, :bad_rows_uri, :options
 
-    reader = Storage.new(input_uri).open
-    schema = CSV2Avro::Schema.new(Storage.new(schema_uri).open) if schema_uri
+  def initialize(input_uri, options)
+    @input_uri = input_uri
+    @schema_uri = options.delete(:schema)
+    @bad_rows_uri = options.delete(:bad_rows)
 
-    writer = CSV2Avro::AvroWriter.new(StringIO.new, schema)
-    bad_rows_writer = StringIO.new
+    @options = options
+  end
 
+  def convert
     Converter.new(reader, writer, bad_rows_writer, options, schema: schema).convert
+  end
 
-    Storage.new(output_uri).write(writer.avro_writer.writer.string)
-    Storage.new(output_uri + '.bad').write(bad_rows_writer.string) if bad_rows_writer.string != ''
+  def schema
+    CSV2Avro::Schema.new(File.open(schema_uri, 'r'))
+  end
+
+  def reader
+    input_uri ? File.open(input_uri, 'r') : CSV2Avro::Stream.new
+  end
+
+  def writer
+    writer = if input_uri
+      File.open("#{input_uri}.avro", 'w')
+    else
+      IO.new(STDOUT.fileno)
+    end
+
+    CSV2Avro::AvroWriter.new(writer, schema)
+  end
+
+  def bad_rows_writer
+    uri = bad_rows_uri || "#{input_uri}.bad"
+    File.open(uri, 'w')
   end
 end
