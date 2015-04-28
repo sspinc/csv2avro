@@ -3,7 +3,9 @@
 All notable changes to this project are documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.3.0] (2015-04-28)
+## Unreleased ([compare](https://github.com/sspinc/csv2avro/compare/0.3.0...HEAD))
+
+## 0.3.0 (2015-04-28; [compare](https://github.com/sspinc/csv2avro/compare/0.1.0...0.3.0))
 
 ### Added
  * Docker support (#6)
@@ -21,6 +23,3 @@ Initial release
  * Bad rows (#4)
  * Versioning ($5)
  * Gem packaging
-
-[unreleased]: https://github.com/sspinc/csv2avro/compare/0.3.0...HEAD
-[0.3.0]: https://github.com/sspinc/csv2avro/compare/0.1.0...0.3.0
