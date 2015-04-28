@@ -30,6 +30,10 @@ option_parser = OptionParser.new do |opts|
     options[:write_defaults] = true
   end
 
+  opts.on('-c', '--stdout', 'Output will go to the standard output stream, leaving files intact.') do
+    options[:stdout] = true
+  end
+
   opts.on("-h", "--help", "Prints help") do
     puts opts
     exit
