@@ -23,19 +23,18 @@ end
 
 namespace :docker do
   desc "Build docker image"
-  task :build => 'rake:build' do
-    patch_version = CSV2Avro::VERSION
-    sh "docker build -t sspinc/csv2avro:#{patch_version} ."
-    minor_version = patch_version.gsub(/\.[0-9]*$/, '')
-    sh "docker tag -f sspinc/csv2avro:#{patch_version} sspinc/csv2avro:#{minor_version}"
-    major_version = minor_version.gsub(/\.[0-9]*$/, '')
-    sh "docker tag -f sspinc/csv2avro:#{patch_version} sspinc/csv2avro:#{major_version}"
+  task :build => "rake:build" do
+    sh "docker build -t sspinc/csv2avro:#{CSV2Avro::VERSION} ."
+    minor_version = CSV2Avro::VERSION.sub(/\.[0-9]*$/, '')
+    sh "docker tag -f sspinc/csv2avro:#{CSV2Avro::VERSION} sspinc/csv2avro:#{minor_version}"
+    major_version = minor_version.sub(/\.[0-9]*$/, '')
+    sh "docker tag -f sspinc/csv2avro:#{CSV2Avro::VERSION} sspinc/csv2avro:#{major_version}"
 
-    sh "docker tag -f sspinc/csv2avro:#{patch_version} sspinc/csv2avro:latest"
+    sh "docker tag -f sspinc/csv2avro:#{CSV2Avro::VERSION} sspinc/csv2avro:latest"
   end
 
   desc "Push docker image"
-  task :push => 'build' do
+  task :push => "build" do
     sh "docker push sspinc/csv2avro"
   end
 end
