@@ -34,26 +34,26 @@ class CSV2Avro
       fields_to_convert = schema.types_hash.reject{ |key, value| value == :string }
 
       reader.each_line do |line|
-        CSV.parse(line, csv_options) do |row|
-          row = row.to_hash
+        begin
+          CSV.parse(line, csv_options) do |row|
+            row = row.to_hash
 
-          if converter_options[:write_defaults]
-            add_defaults_to_hash!(row, defaults_hash)
-          end
-
-          convert_fields!(row, fields_to_convert)
-
-          begin
-            writer.write(row)
-            writer.flush
-          rescue Exception
-            if bad_rows_writer.size == 0
-              bad_rows_writer << header_row + "\n"
+            if converter_options[:write_defaults]
+              add_defaults_to_hash!(row, defaults_hash)
             end
 
-            bad_rows_writer << line
-            bad_rows_writer.flush
+            convert_fields!(row, fields_to_convert)
+
+            writer.write(row)
+            writer.flush
           end
+        rescue Exception
+          if bad_rows_writer.size == 0
+            bad_rows_writer << header_row + "\n"
+          end
+
+          bad_rows_writer << line
+          bad_rows_writer.flush
         end
       end
     end
@@ -64,16 +64,16 @@ class CSV2Avro
       fields_to_convert.each do |key, value|
         hash[key] = case value
                     when :int
-                      Integer(hash[key]) rescue hash[key]
+                      Integer(hash[key])
                     when :float, :double
-                      Float(hash[key]) rescue hash[key]
+                      Float(hash[key])
                     when :boolean
                       parse_boolean(hash[key])
                     when :array
                       parse_array(hash[key])
                     when :enum
                       hash[key].downcase.tr(" ", "_")
-                    end
+                    end rescue hash[key]
       end
 
       hash

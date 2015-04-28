@@ -11,7 +11,7 @@ class CSV2Avro
       end
       buffer
     rescue EOFError => e
-      false
+      ""
     end
 
     def each_line
