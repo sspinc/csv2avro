@@ -2,11 +2,10 @@ require 'spec_helper'
 
 RSpec.describe CSV2Avro do
   describe '#convert' do
-    let(:input_uri) { "./spec/support/data.tsv" }
+    let(:input_uri) { './spec/support/data.tsv' }
     let(:options) do
       {
-        schema: "./spec/support/schema.avsc",
-        delimiter: "\t"
+        schema: './spec/support/schema.avsc'
       }
     end
 
@@ -15,15 +14,15 @@ RSpec.describe CSV2Avro do
     end
 
     subject(:bad_rows_file) do
-      File.open(URI("./spec/support/data.bad.tsv").path, 'r')
+      File.open(URI('./spec/support/data.bad.tsv').path, 'r')
     end
 
     subject(:avro_file) do
-      File.open(URI("./spec/support/data.avro").path, 'r')
+      File.open(URI('./spec/support/data.avro').path, 'r')
     end
 
     it 'should not have any bad rows' do
-      expect(bad_rows_file.read).to eq("")
+      expect(bad_rows_file.read).to eq('id,name,description\n3,,Bras\n')
     end
 
     it 'should contain the avro data' do

@@ -1,3 +1,4 @@
-id	name	description
-1	dresses	Dresses
-2	female-tops	
+id,name,description
+1,dresses,Dresses
+2,female-tops,
+3,,Bras

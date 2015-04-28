@@ -3,33 +3,35 @@ require 'csv2avro/stream'
 require 'csv2avro/version'
 
 class CSV2Avro
-  attr_reader :input_uri, :schema_uri, :bad_rows_uri, :options
+  attr_reader :input_path, :schema_path, :bad_rows_path, :options
 
-  def initialize(input_uri, options)
-    @input_uri = input_uri
-    @schema_uri = options.delete(:schema)
-    @bad_rows_uri = options.delete(:bad_rows)
+  def initialize(input_path, options)
+    @input_path = input_path
+    @schema_path = options.delete(:schema)
+    @bad_rows_path = options.delete(:bad_rows)
 
     @options = options
   end
 
   def convert
     Converter.new(reader, writer, bad_rows_writer, options, schema: schema).convert
+
+    clean_up_bad_rows_file
   end
 
   private
 
   def schema
-    CSV2Avro::Schema.new(File.open(schema_uri, 'r'))
+    CSV2Avro::Schema.new(File.open(schema_path, 'r'))
   end
 
   def reader
-    input_uri ? File.open(input_uri, 'r') : CSV2Avro::Stream.new
+    input_path ? File.open(input_path, 'r') : CSV2Avro::Stream.new
   end
 
   def writer
-    writer = if input_uri
-      file_name = input_uri.split('.')[0..-2].push('avro').join('.')
+    writer = if input_path
+      file_name = input_path.split('.')[0..-2].push('avro').join('.')
       File.open(file_name, 'w')
     else
       IO.new(STDOUT.fileno)
@@ -39,7 +41,14 @@ class CSV2Avro
   end
 
   def bad_rows_writer
-    uri = bad_rows_uri || input_uri.split('.').insert(-2, 'bad').join('.')
-    File.open(uri, 'w')
+    @writer ||= File.open(bad_rows_uri, 'w')
+  end
+
+  def bad_rows_uri
+    bad_rows_path || input_path.split('.').insert(-2, 'bad').join('.')
+  end
+
+  def clean_up_bad_rows_file
+    File.delete(bad_rows_uri) if bad_rows_writer.size == 0
   end
 end

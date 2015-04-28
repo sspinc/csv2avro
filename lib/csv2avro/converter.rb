@@ -52,7 +52,7 @@ class CSV2Avro
             end
 
             bad_rows_writer << line
-            # bad_rows_writer.flush
+            bad_rows_writer.flush
           end
         end
       end
