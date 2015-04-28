@@ -32,8 +32,14 @@ RSpec.describe CSV2Avro::Converter do
 
         let(:writer) { CSV2Avro::AvroWriter.new(StringIO.new, schema) }
 
+        let(:bad_rows_writer) { StringIO.new }
+
         before do
           CSV2Avro::Converter.new(reader, writer, StringIO.new, {}, schema: schema).convert
+        end
+
+        it 'should not have any bad rows' do
+          expect(bad_rows_writer.read).to eq("")
         end
 
         it 'should store the data with the given schema' do
@@ -61,8 +67,14 @@ RSpec.describe CSV2Avro::Converter do
 
         let(:writer) { CSV2Avro::AvroWriter.new(StringIO.new, schema) }
 
+        let(:bad_rows_writer) { StringIO.new }
+
         before do
           CSV2Avro::Converter.new(reader, writer, StringIO.new, { delimiter: "\t" }, schema: schema).convert
+        end
+
+        it 'should not have any bad rows' do
+          expect(bad_rows_writer.read).to eq("")
         end
 
         it 'should store the data with the given schema' do
@@ -106,8 +118,14 @@ RSpec.describe CSV2Avro::Converter do
 
         let(:writer) { CSV2Avro::AvroWriter.new(StringIO.new, schema) }
 
+        let(:bad_rows_writer) { StringIO.new }
+
         before do
           CSV2Avro::Converter.new(reader, writer, StringIO.new, { delimiter: "\t" }, schema: schema).convert
+        end
+
+        it 'should not have any bad rows' do
+          expect(bad_rows_writer.read).to eq("")
         end
 
         it 'should store the data with the given schema' do
@@ -135,8 +153,14 @@ RSpec.describe CSV2Avro::Converter do
 
         let(:writer) { CSV2Avro::AvroWriter.new(StringIO.new, schema) }
 
+        let(:bad_rows_writer) { StringIO.new }
+
         before do
           CSV2Avro::Converter.new(reader, writer, StringIO.new, { delimiter: "\t", array_delimiter: ';' }, schema: schema).convert
+        end
+
+        it 'should not have any bad rows' do
+          expect(bad_rows_writer.read).to eq("")
         end
 
         it 'should store the data with the given schema' do
@@ -180,8 +204,14 @@ RSpec.describe CSV2Avro::Converter do
 
       let(:writer) { CSV2Avro::AvroWriter.new(StringIO.new, schema) }
 
+      let(:bad_rows_writer) { StringIO.new }
+
       before do
         CSV2Avro::Converter.new(reader, writer, StringIO.new, { write_defaults: true }, schema: schema).convert
+      end
+
+      it 'should not have any bad rows' do
+        expect(bad_rows_writer.read).to eq("")
       end
 
       it 'should store the defaults data' do
@@ -222,11 +252,17 @@ RSpec.describe CSV2Avro::Converter do
 
       let(:writer) { CSV2Avro::AvroWriter.new(StringIO.new, schema) }
 
+      let(:bad_rows_writer) { StringIO.new }
+
       before do
         CSV2Avro::Converter.new(reader, writer, StringIO.new, {}, schema: schema).convert
       end
 
-      it 'should work' do
+      it 'should not have any bad rows' do
+        expect(bad_rows_writer.read).to eq("")
+      end
+
+      it 'should store the data with the given schema' do
         expect(AvroReader.new(writer).read).to eq(
           [
             {'id'=>1, 'look_id'=>'1_red'},
@@ -271,8 +307,14 @@ RSpec.describe CSV2Avro::Converter do
 
       let(:writer) { CSV2Avro::AvroWriter.new(StringIO.new, schema) }
 
+      let(:bad_rows_writer) { StringIO.new }
+
       before do
         CSV2Avro::Converter.new(reader, writer, StringIO.new, { write_defaults: true }, schema: schema).convert
+      end
+
+      it 'should not have any bad rows' do
+        expect(bad_rows_writer.read).to eq("")
       end
 
       it 'should store the data with the given schema' do
