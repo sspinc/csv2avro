@@ -1,6 +1,6 @@
-# Csv2avro
+# CSV2Avro
 
-TODO: Write a gem description
+Convert CSV files to Avro like a boss.
 
 ## Installation
 

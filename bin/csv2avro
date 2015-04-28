@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << File.dirname(__FILE__) + "/../lib" if $0 == __FILE__
+require 'optparse'
+require 'csv2avro'
+
+options = {}
+OPERATIONS = %w[convert]
+
+option_parser = OptionParser.new do |opts|
+  opts.banner = "Version #{CSV2Avro::VERSION} of CSV2Avro\n" \
+    "Usage: #{File.basename(__FILE__)} [#{OPERATIONS.join('|')}] [options] [source_path] [target_path]"
+
+  opts.on("-s", "--schema SCHEMA", "A file containing the Avro schema. This value is required.") do |path|
+    options[:schema] = path
+  end
+
+  opts.on("-d", "--delimiter [DELIMITER]", "Field delimiter. If none specified, then comma is used as the delimiter.") do |char|
+    options[:delimiter] = char.gsub("\\t", "\t")
+  end
+
+  opts.on("-a", "--array-delimiter [ARRAY_DELIMITER]", "Array field delimiter. If none specified, then comma is used as the delimiter.") do |char|
+    options[:array_delimiter] = char
+  end
+
+  opts.on("-D", "--write-defaults", "Write default values.") do
+    options[:write_defaults] = true
+  end
+
+  opts.on("-h", "--help", "Prints help") do
+    puts opts
+    exit
+  end
+end
+
+option_parser.parse!
+
+
+operation = ARGV.shift
+source_path = ARGV.shift
+target_path = ARGV.shift
+
+if OPERATIONS.include?(operation)
+  begin
+    CSV2Avro.new.send(operation.to_sym, source_path, target_path, options)
+  rescue ArgumentError => ex
+    puts ex.message
+  rescue Exception => e
+    puts "Uh oh, something went wrong!"
+    puts e.message
+    puts e.backtrace.join("\n")
+  end
+else
+  puts option_parser.help
+end

@@ -5,11 +5,11 @@ require 'csv2avro/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "csv2avro"
-  spec.version       = Csv2avro::VERSION
+  spec.version       = CSV2Avro::VERSION
   spec.authors       = ["Peter Ableda"]
   spec.email         = ["scotty@secretsaucepartners.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{Convert CSV files to Avro}
+  spec.description   = %q{Convert CSV files to Avro like a boss.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -20,4 +20,10 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rspec", "~> 3.2"
+  spec.add_development_dependency "pry", "~> 0.10"
+  spec.add_development_dependency "bump", "~> 0.5"
+
+  spec.add_dependency "aws-sdk", "~> 2"
+  spec.add_dependency "avro", "~> 1.7"
 end
