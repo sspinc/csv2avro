@@ -44,10 +44,16 @@ option_parser.parse!
 
 source_path = ARGV.shift
 
+
 begin
+  raise OptionParser::MissingArgument.new('--schema') if options[:schema].nil?
+  raise OptionParser::MissingArgument.new('--bad-rows') if options[:bad_rows].nil? && source_path.nil?
+
   CSV2Avro.new(source_path, options).convert
-rescue ArgumentError => ex
+rescue OptionParser::MissingArgument => ex
   puts ex.message
+
+  puts option_parser
 rescue Exception => e
   puts "Uh oh, something went wrong!"
   puts e.message
