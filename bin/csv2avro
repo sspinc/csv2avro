@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-$LOAD_PATH << File.dirname(__FILE__) + "/../lib" if $0 == __FILE__
+$LOAD_PATH << File.dirname(__FILE__) + '/../lib' if $0 == __FILE__
 require 'optparse'
 require 'csv2avro'
 
@@ -10,23 +10,23 @@ option_parser = OptionParser.new do |opts|
   opts.banner = "Version #{CSV2Avro::VERSION} of CSV2Avro\n" \
     "Usage: #{File.basename(__FILE__)} [options] [file]"
 
-  opts.on("-s", "--schema SCHEMA", "A file containing the Avro schema. This value is required.") do |path|
+  opts.on('-s', '--schema SCHEMA', 'A file containing the Avro schema. This value is required.') do |path|
     options[:schema] = path
   end
 
-  opts.on("-b", "--bad-rows [BAD_ROWS]", "The output location of the bad rows file.") do |path|
+  opts.on('-b', '--bad-rows [BAD_ROWS]', 'The output location of the bad rows file.') do |path|
     options[:bad_rows] = path
   end
 
-  opts.on("-d", "--delimiter [DELIMITER]", "Field delimiter. If none specified, then comma is used as the delimiter.") do |char|
+  opts.on('-d', '--delimiter [DELIMITER]', 'Field delimiter. If none specified, then comma is used as the delimiter.') do |char|
     options[:delimiter] = char.gsub("\\t", "\t")
   end
 
-  opts.on("-a", "--array-delimiter [ARRAY_DELIMITER]", "Array field delimiter. If none specified, then comma is used as the delimiter.") do |char|
+  opts.on('-a', '--array-delimiter [ARRAY_DELIMITER]', 'Array field delimiter. If none specified, then comma is used as the delimiter.') do |char|
     options[:array_delimiter] = char
   end
 
-  opts.on("-D", "--write-defaults", "Write default values.") do
+  opts.on('-D', '--write-defaults', 'Write default values.') do
     options[:write_defaults] = true
   end
 
@@ -34,7 +34,7 @@ option_parser = OptionParser.new do |opts|
     options[:stdout] = true
   end
 
-  opts.on("-h", "--help", "Prints help") do
+  opts.on('-h', '--help', 'Prints help') do
     puts opts
     exit
   end
@@ -55,7 +55,7 @@ rescue OptionParser::MissingArgument => ex
 
   puts option_parser
 rescue Exception => e
-  puts "Uh oh, something went wrong!"
+  puts 'Uh oh, something went wrong!'
   puts e.message
   puts e.backtrace.join("\n")
 end
