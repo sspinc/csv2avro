@@ -22,7 +22,7 @@ RSpec.describe CSV2Avro do
     end
 
     it 'should not have any bad rows' do
-      expect(bad_rows_file.read).to eq('id,name,description\n3,,Bras\n')
+      expect(bad_rows_file.read).to eq("id,name,description\n3,,Bras\n")
     end
 
     it 'should contain the avro data' do
