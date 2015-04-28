@@ -18,8 +18,7 @@ end
 task :default => :spec
 
 task :build do
-  patch_version = CSV2Avro::VERSION
-  %x( ln -f pkg/csv2avro-#{patch_version}.gem pkg/csv2avro-latest.gem )
+  sh "ln -f pkg/csv2avro-#{CSV2Avro::VERSION}.gem pkg/csv2avro-latest.gem"
 end
 
 namespace :docker do
