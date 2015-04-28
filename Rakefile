@@ -25,9 +25,9 @@ namespace :docker do
   desc "Build docker image"
   task :build => "rake:build" do
     sh "docker build -t sspinc/csv2avro:#{CSV2Avro::VERSION} ."
-    minor_version = CSV2Avro::VERSION.sub(/\.[0-9]*$/, '')
+    minor_version = CSV2Avro::VERSION.sub(/\.[0-9]+$/, '')
     sh "docker tag -f sspinc/csv2avro:#{CSV2Avro::VERSION} sspinc/csv2avro:#{minor_version}"
-    major_version = minor_version.sub(/\.[0-9]*$/, '')
+    major_version = minor_version.sub(/\.[0-9]+$/, '')
     sh "docker tag -f sspinc/csv2avro:#{CSV2Avro::VERSION} sspinc/csv2avro:#{major_version}"
 
     sh "docker tag -f sspinc/csv2avro:#{CSV2Avro::VERSION} sspinc/csv2avro:latest"
