@@ -31,7 +31,7 @@ namespace :docker do
 
   desc "Run specs inside docker image"
   task :spec => :build do
-    sh "docker run --entrypoint=rake sspinc/csv2avro:#{CSV2Avro::VERSION} spec"
+    sh "docker run -t --entrypoint=rake sspinc/csv2avro:#{CSV2Avro::VERSION} spec"
   end
 
   desc "Push docker image"
