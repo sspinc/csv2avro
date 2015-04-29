@@ -12,7 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
  * Do not include .git in Docker build context
 
 ### Fixed
- * Build project into Docker image (#8)
+ * Build project into Docker image (#9)
 
 ## 0.3.0 (2015-04-28; [compare](https://github.com/sspinc/csv2avro/compare/0.1.0...0.3.0))
 
