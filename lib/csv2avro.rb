@@ -41,7 +41,11 @@ class CSV2Avro
   end
 
   def avro_uri
-    input_path.split('.')[0..-2].push('avro').join('.')
+    dir = File.dirname(input_path)
+    ext = File.extname(input_path)
+    name = File.basename(input_path, ext)
+
+    "#{dir}/#{name}.avro"
   end
 
   def bad_rows_writer
@@ -49,7 +53,17 @@ class CSV2Avro
   end
 
   def bad_rows_uri
-    bad_rows_path || input_path.split('.').insert(-2, 'bad').join('.')
+    return bad_rows_path if bad_rows_path
+
+    dir = File.dirname(input_path)
+    ext = File.extname(input_path)
+    name = File.basename(input_path, ext)
+
+    bad = "#{dir}/#{name}.bad"
+
+    bad << "#{ext}" unless ext.empty?
+
+    bad
   end
 
   def clean_up_bad_rows_file
