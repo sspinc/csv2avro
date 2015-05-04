@@ -58,7 +58,7 @@ RSpec.describe CSV2Avro::Schema do
     end
   end
 
-  describe '#aliases_hash' do
+  describe '#aliases' do
     context 'shema with aliases' do
       let(:schema_io) do
         StringIO.new(
@@ -78,7 +78,7 @@ RSpec.describe CSV2Avro::Schema do
       end
 
       it 'should return a hash with the alias - name mapping' do
-        expect(schema.aliases_hash).to eq({ 'color_id'=>'look_id', 'photo_group_id'=>'look_id' })
+        expect(schema.aliases).to eq({ 'color_id'=>'look_id', 'photo_group_id'=>'look_id' })
       end
     end
   end

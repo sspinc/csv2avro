@@ -29,7 +29,7 @@ class CSV2Avro
     end
 
     # TODO: Change this when the avro gem starts to support aliases
-    def aliases_hash
+    def aliases
       schema_as_json = JSON.parse(schema_string)
 
       Hash[

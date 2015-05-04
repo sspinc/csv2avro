@@ -110,10 +110,10 @@ class CSV2Avro
     end
 
     def init_header_converter
-      aliases_hash = schema.aliases_hash
+      aliases = schema.aliases
 
       CSV::HeaderConverters[:aliases] = lambda do |header|
-          aliases_hash[header] || header
+          aliases[header] || header
       end
     end
   end
