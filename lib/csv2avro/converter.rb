@@ -31,7 +31,7 @@ class CSV2Avro
     def convert
       defaults = schema.defaults if converter_options[:write_defaults]
 
-      fields_to_convert = schema.types_hash.reject{ |key, value| value == :string }
+      fields_to_convert = schema.types.reject{ |key, value| value == :string }
 
       reader.each_line do |line|
         begin

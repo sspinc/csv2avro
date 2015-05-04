@@ -27,7 +27,7 @@ RSpec.describe CSV2Avro::Schema do
     end
   end
 
-  describe '#types_hash' do
+  describe '#types' do
     context 'shema with different types' do
       let(:schema_io) do
         StringIO.new(
@@ -53,7 +53,7 @@ RSpec.describe CSV2Avro::Schema do
       end
 
       it 'should return a hash with the field - default value pairs' do
-        expect(schema.types_hash).to eq({ 'id'=>:int, 'category'=>:string, 'reviews'=>:array, 'enabled'=>:boolean, 'availability'=>:enum })
+        expect(schema.types).to eq({ 'id'=>:int, 'category'=>:string, 'reviews'=>:array, 'enabled'=>:boolean, 'availability'=>:enum })
       end
     end
   end

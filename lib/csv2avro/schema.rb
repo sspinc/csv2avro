@@ -13,7 +13,7 @@ class CSV2Avro
       ]
     end
 
-    def types_hash
+    def types
       Hash[
         avro_schema.fields.map do |field|
           type = if field.type.type_sym == :union
