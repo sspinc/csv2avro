@@ -1,3 +1,5 @@
+require 'json'
+
 class CSV2Avro
   class Schema
     attr_reader :avro_schema, :schema_string
