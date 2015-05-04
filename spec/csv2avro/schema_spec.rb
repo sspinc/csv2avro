@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe CSV2Avro::Schema do
-  describe '#defaults_hash' do
+  describe '#defaults' do
     context 'shema with default values' do
       let(:schema_io) do
         StringIO.new(
@@ -22,7 +22,7 @@ RSpec.describe CSV2Avro::Schema do
       end
 
       it 'should return a hash with the field - default value pairs' do
-        expect(schema.defaults_hash).to eq({ 'category'=>'unknown', 'enabled'=>false })
+        expect(schema.defaults).to eq({ 'category'=>'unknown', 'enabled'=>false })
       end
     end
   end

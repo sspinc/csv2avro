@@ -29,7 +29,7 @@ class CSV2Avro
     end
 
     def convert
-      defaults_hash = schema.defaults_hash if converter_options[:write_defaults]
+      defaults = schema.defaults if converter_options[:write_defaults]
 
       fields_to_convert = schema.types_hash.reject{ |key, value| value == :string }
 
@@ -39,7 +39,7 @@ class CSV2Avro
             row = row.to_hash
 
             if converter_options[:write_defaults]
-              add_defaults_to_hash!(row, defaults_hash)
+              add_defaults_to_hash!(row, defaults)
             end
 
             convert_fields!(row, fields_to_convert)
@@ -95,15 +95,15 @@ class CSV2Avro
       value.split(delimiter) if value
     end
 
-    def add_defaults_to_hash!(hash, defaults_hash)
+    def add_defaults_to_hash!(hash, defaults)
       # Add default values to nil cells
       hash.each do |key, value|
-        hash[key] = defaults_hash[key] if value.nil?
+        hash[key] = defaults[key] if value.nil?
       end
 
       # Add default values to missing columns
-      defaults_hash.each  do |key, value|
-        hash[key] = defaults_hash[key]  unless hash.has_key?(key)
+      defaults.each  do |key, value|
+        hash[key] = defaults[key]  unless hash.has_key?(key)
       end
 
       hash

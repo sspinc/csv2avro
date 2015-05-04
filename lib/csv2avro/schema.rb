@@ -7,7 +7,7 @@ class CSV2Avro
       @avro_schema = Avro::Schema.parse(schema_string)
     end
 
-    def defaults_hash
+    def defaults
       Hash[
         avro_schema.fields.map{ |field| [field.name, field.default] unless field.default.nil? }.compact
       ]
