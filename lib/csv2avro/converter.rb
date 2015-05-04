@@ -33,7 +33,7 @@ class CSV2Avro
 
       fields_to_convert = schema.types.reject{ |key, value| value == :string }
 
-      reader.each_line do |line|
+      reader.each do |line|
         begin
           CSV.parse(line, csv_options) do |row|
             row = row.to_hash

@@ -1,12 +1,11 @@
 require 'csv2avro/converter'
-require 'csv2avro/stream'
 require 'csv2avro/version'
 
 class CSV2Avro
   attr_reader :input_path, :schema_path, :bad_rows_path, :std_out_option, :options
 
-  def initialize(input_path, options)
-    @input_path = input_path
+  def initialize(options)
+    @input_path = ARGV.first
     @schema_path = options.delete(:schema)
     @bad_rows_path = options.delete(:bad_rows)
     @std_out_option = !input_path || options.delete(:stdout)
@@ -27,7 +26,7 @@ class CSV2Avro
   end
 
   def reader
-    input_path ? File.open(input_path, 'r') : CSV2Avro::Stream.new
+    ARGF
   end
 
   def writer
