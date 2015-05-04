@@ -15,8 +15,14 @@ class CSV2Avro
 
   def convert
     Converter.new(reader, writer, bad_rows_writer, options, schema: schema).convert
+  ensure
+    writer.close if writer
 
-    clean_up_bad_rows_file unless std_out_option
+    if bad_rows_writer.size == 0
+      File.delete(bad_rows_uri)
+    elsif bad_rows_writer
+      bad_rows_writer.close
+    end
   end
 
   private
@@ -32,13 +38,15 @@ class CSV2Avro
   end
 
   def writer
-    writer = if std_out_option
-      IO.new(STDOUT.fileno)
-    else
-      File.open(avro_uri, 'w')
-    end
+    @__writer ||= begin
+      writer = if std_out_option
+        IO.new(STDOUT.fileno)
+      else
+        File.open(avro_uri, 'w')
+      end
 
-    CSV2Avro::AvroWriter.new(writer, schema)
+      CSV2Avro::AvroWriter.new(writer, schema)
+    end
   end
 
   def avro_uri
@@ -50,7 +58,7 @@ class CSV2Avro
   end
 
   def bad_rows_writer
-    @writer ||= File.open(bad_rows_uri, 'w')
+    @__bad_rows_writer ||= File.open(bad_rows_uri, 'w')
   end
 
   def bad_rows_uri
@@ -65,9 +73,5 @@ class CSV2Avro
     bad << "#{ext}" unless ext.empty?
 
     bad
-  end
-
-  def clean_up_bad_rows_file
-    File.delete(bad_rows_uri) if bad_rows_writer.size == 0
   end
 end
