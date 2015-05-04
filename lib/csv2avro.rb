@@ -22,7 +22,9 @@ class CSV2Avro
   private
 
   def schema
-    CSV2Avro::Schema.new(File.open(schema_path, 'r'))
+    @schema ||= File.open(schema_path, 'r') do |schema|
+      CSV2Avro::Schema.new(schema)
+    end
   end
 
   def reader
