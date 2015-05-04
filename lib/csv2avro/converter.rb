@@ -39,7 +39,7 @@ class CSV2Avro
             row = row.to_hash
 
             if converter_options[:write_defaults]
-              add_defaults_to_hash!(row, defaults)
+              add_defaults_to_row!(row, defaults)
             end
 
             convert_fields!(row, fields_to_convert)
@@ -60,27 +60,27 @@ class CSV2Avro
 
     private
 
-    def convert_fields!(hash, fields_to_convert)
+    def convert_fields!(row, fields_to_convert)
       fields_to_convert.each do |key, value|
-        hash[key] = begin
+        row[key] = begin
           case value
             when :int
-              Integer(hash[key])
+              Integer(row[key])
             when :float, :double
-              BigDecimal(hash[key])
+              BigDecimal(row[key])
             when :boolean
-              parse_boolean(hash[key])
+              parse_boolean(row[key])
             when :array
-              parse_array(hash[key])
+              parse_array(row[key])
             when :enum
-              hash[key].downcase.tr(" ", "_")
+              row[key].downcase.tr(" ", "_")
           end
         rescue
-          hash[key]
+          row[key]
         end
       end
 
-      hash
+      row
     end
 
     def parse_boolean(value)
@@ -95,18 +95,18 @@ class CSV2Avro
       value.split(delimiter) if value
     end
 
-    def add_defaults_to_hash!(hash, defaults)
+    def add_defaults_to_row!(row, defaults)
       # Add default values to nil cells
-      hash.each do |key, value|
-        hash[key] = defaults[key] if value.nil?
+      row.each do |key, value|
+        row[key] = defaults[key] if value.nil?
       end
 
       # Add default values to missing columns
       defaults.each  do |key, value|
-        hash[key] = defaults[key]  unless hash.has_key?(key)
+        row[key] = defaults[key]  unless row.has_key?(key)
       end
 
-      hash
+      row
     end
 
     def init_header_converter
