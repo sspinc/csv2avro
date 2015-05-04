@@ -62,18 +62,22 @@ class CSV2Avro
 
     def convert_fields!(hash, fields_to_convert)
       fields_to_convert.each do |key, value|
-        hash[key] = case value
-                    when :int
-                      Integer(hash[key])
-                    when :float, :double
-                      BigDecimal(hash[key])
-                    when :boolean
-                      parse_boolean(hash[key])
-                    when :array
-                      parse_array(hash[key])
-                    when :enum
-                      hash[key].downcase.tr(" ", "_")
-                    end rescue hash[key]
+        hash[key] = begin
+          case value
+            when :int
+              Integer(hash[key])
+            when :float, :double
+              BigDecimal(hash[key])
+            when :boolean
+              parse_boolean(hash[key])
+            when :array
+              parse_array(hash[key])
+            when :enum
+              hash[key].downcase.tr(" ", "_")
+          end
+        rescue
+          hash[key]
+        end
       end
 
       hash
