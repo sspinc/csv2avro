@@ -68,10 +68,6 @@ class CSV2Avro
     ext = File.extname(input_path)
     name = File.basename(input_path, ext)
 
-    bad = "#{dir}/#{name}.bad"
-
-    bad << "#{ext}" unless ext.empty?
-
-    bad
+    "#{dir}/#{name}.bad#{ext}"
   end
 end
