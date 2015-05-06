@@ -47,7 +47,7 @@ class CSV2Avro
             writer.write(row)
             writer.flush
           end
-        rescue Exception
+        rescue
           if bad_rows_writer.size == 0
             bad_rows_writer << header_row + "\n"
           end
