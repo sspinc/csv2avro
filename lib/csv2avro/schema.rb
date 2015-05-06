@@ -1,3 +1,5 @@
+require 'json'
+
 class CSV2Avro
   class Schema
     attr_reader :avro_schema, :schema_string
@@ -7,13 +9,13 @@ class CSV2Avro
       @avro_schema = Avro::Schema.parse(schema_string)
     end
 
-    def defaults_hash
+    def defaults
       Hash[
         avro_schema.fields.map{ |field| [field.name, field.default] unless field.default.nil? }.compact
       ]
     end
 
-    def types_hash
+    def types
       Hash[
         avro_schema.fields.map do |field|
           type = if field.type.type_sym == :union
@@ -29,7 +31,7 @@ class CSV2Avro
     end
 
     # TODO: Change this when the avro gem starts to support aliases
-    def aliases_hash
+    def aliases
       schema_as_json = JSON.parse(schema_string)
 
       Hash[
