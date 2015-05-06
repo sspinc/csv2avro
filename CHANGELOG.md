@@ -3,7 +3,7 @@
 All notable changes to this project are documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased ([compare](https://github.com/sspinc/csv2avro/compare/0.3.0...HEAD))
+## 0.4.0 (2015-05-07; [compare](https://github.com/sspinc/csv2avro/compare/0.3.0...0.4.0))
 
 ### Added
  * Streaming support (#7)
