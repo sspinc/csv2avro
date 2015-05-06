@@ -2,13 +2,13 @@ require 'csv2avro/converter'
 require 'csv2avro/version'
 
 class CSV2Avro
-  attr_reader :input_path, :schema_path, :bad_rows_path, :std_out_option, :options
+  attr_reader :input_path, :schema_path, :bad_rows_path, :stdout_option, :options
 
   def initialize(options)
     @input_path = ARGV.first
     @schema_path = options.delete(:schema)
     @bad_rows_path = options.delete(:bad_rows)
-    @std_out_option = !input_path || options.delete(:stdout)
+    @stdout_option = !input_path || options.delete(:stdout)
 
     @options = options
   end
@@ -39,7 +39,7 @@ class CSV2Avro
 
   def writer
     @__writer ||= begin
-      writer = if std_out_option
+      writer = if stdout_option
         IO.new(STDOUT.fileno)
       else
         File.open(avro_uri, 'w')
