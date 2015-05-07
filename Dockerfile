@@ -16,4 +16,4 @@ RUN bundle install
 
 COPY . /srv/csv2avro
 
-ENTRYPOINT ["csv2avro"]
+ENTRYPOINT ["./bin/csv2avro"]
