@@ -4,7 +4,7 @@ require 'csv'
 
 class CSV2Avro
   class Converter
-    attr_reader :writer, :bad_rows_writer, :schema, :csv, :converter_options, :original_header, :column_separator
+    attr_reader :writer, :bad_rows_writer, :schema, :reader, :csv_options, :converter_options, :header_row, :column_separator
 
     def initialize(reader, writer, bad_rows_writer, options, schema: schema)
       @writer = writer
@@ -13,70 +13,74 @@ class CSV2Avro
 
       @column_separator = options[:delimiter] || ','
 
+      @reader = reader
+      @header_row = reader.readline.strip
+      header = header_row.split(column_separator)
+
       init_header_converter
-      csv_options = {
-        headers: true,
+      @csv_options = {
+        headers: header,
         skip_blanks: true,
-        return_headers: true,
         col_sep: column_separator,
         header_converters: :aliases
       }
-
-      @csv = CSV.new(reader, csv_options)
-
-      @original_header = deserialize(csv.first.fields)
 
       @converter_options = options
     end
 
     def convert
-      defaults_hash = schema.defaults_hash if converter_options[:write_defaults]
+      defaults = schema.defaults if converter_options[:write_defaults]
 
-      fields_to_convert = schema.types_hash.reject{ |key, value| value == :string }
+      fields_to_convert = schema.types.reject{ |key, value| value == :string }
 
-      csv.each do |line|
-        row = line.to_hash
-
-        if converter_options[:write_defaults]
-          add_defaults_to_hash!(row, defaults_hash)
-        end
-
-        convert_fields!(row, fields_to_convert)
-
+      reader.each do |line|
         begin
-          writer.write(row)
-        rescue Exception
+          CSV.parse(line, csv_options) do |row|
+            row = row.to_hash
+
+            if converter_options[:write_defaults]
+              add_defaults_to_row!(row, defaults)
+            end
+
+            convert_fields!(row, fields_to_convert)
+
+            writer.write(row)
+            writer.flush
+          end
+        rescue
           if bad_rows_writer.size == 0
-            bad_rows_writer << original_header
+            bad_rows_writer << header_row + "\n"
           end
 
-          bad_rows_writer << deserialize(line.fields)
+          bad_rows_writer << line
+          bad_rows_writer.flush
         end
       end
-
-      writer.flush
-      bad_rows_writer.flush
     end
 
     private
 
-    def convert_fields!(hash, fields_to_convert)
+    def convert_fields!(row, fields_to_convert)
       fields_to_convert.each do |key, value|
-        hash[key] = case value
-                    when :int
-                      Integer(hash[key]) rescue hash[key]
-                    when :float, :double
-                      Float(hash[key]) rescue hash[key]
-                    when :boolean
-                      parse_boolean(hash[key])
-                    when :array
-                      parse_array(hash[key])
-                    when :enum
-                      hash[key].downcase.tr(" ", "_")
-                    end
+        row[key] = begin
+          case value
+            when :int
+              Integer(row[key])
+            when :float, :double
+              BigDecimal(row[key])
+            when :boolean
+              parse_boolean(row[key])
+            when :array
+              parse_array(row[key])
+            when :enum
+              row[key].downcase.tr(" ", "_")
+          end
+        rescue
+          row[key]
+        end
       end
 
-      hash
+      row
     end
 
     def parse_boolean(value)
@@ -91,30 +95,26 @@ class CSV2Avro
       value.split(delimiter) if value
     end
 
-    def add_defaults_to_hash!(hash, defaults_hash)
+    def add_defaults_to_row!(row, defaults)
       # Add default values to nil cells
-      hash.each do |key, value|
-        hash[key] = defaults_hash[key] if value.nil?
+      row.each do |key, value|
+        row[key] = defaults[key] if value.nil?
       end
 
       # Add default values to missing columns
-      defaults_hash.each  do |key, value|
-        hash[key] = defaults_hash[key]  unless hash.has_key?(key)
+      defaults.each  do |key, value|
+        row[key] = defaults[key]  unless row.has_key?(key)
       end
 
-      hash
+      row
     end
 
     def init_header_converter
-      aliases_hash = schema.aliases_hash
+      aliases = schema.aliases
 
       CSV::HeaderConverters[:aliases] = lambda do |header|
-          aliases_hash[header] || header
+          aliases[header] || header
       end
-    end
-
-    def deserialize(line)
-      line.join(column_separator) + "\n"
     end
   end
 end

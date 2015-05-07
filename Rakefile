@@ -17,13 +17,9 @@ end
 
 task :default => :spec
 
-task :build do
-  sh "ln -f pkg/csv2avro-#{CSV2Avro::VERSION}.gem pkg/csv2avro-latest.gem"
-end
-
 namespace :docker do
   desc "Build docker image"
-  task :build => "rake:build" do
+  task :build do
     sh "docker build -t sspinc/csv2avro:#{CSV2Avro::VERSION} ."
     minor_version = CSV2Avro::VERSION.sub(/\.[0-9]+$/, '')
     sh "docker tag -f sspinc/csv2avro:#{CSV2Avro::VERSION} sspinc/csv2avro:#{minor_version}"
@@ -33,8 +29,13 @@ namespace :docker do
     sh "docker tag -f sspinc/csv2avro:#{CSV2Avro::VERSION} sspinc/csv2avro:latest"
   end
 
+  desc "Run specs inside docker image"
+  task :spec => :build do
+    sh "docker run -t --entrypoint=rake sspinc/csv2avro:#{CSV2Avro::VERSION} spec"
+  end
+
   desc "Push docker image"
-  task :push => "build" do
+  task :push => :spec do
     sh "docker push sspinc/csv2avro"
   end
 end
