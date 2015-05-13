@@ -67,7 +67,7 @@ class CSV2Avro
             when :int
               Integer(row[key])
             when :float, :double
-              BigDecimal(row[key])
+              Float(row[key])
             when :boolean
               parse_boolean(row[key])
             when :array
