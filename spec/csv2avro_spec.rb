@@ -9,7 +9,7 @@ RSpec.describe CSV2Avro do
     end
 
     subject do
-      ARGV.replace ['./spec/support/data.tsv']
+      ARGV.replace ['./spec/support/data.csv']
 
       CSV2Avro.new(options)
     end
@@ -19,7 +19,7 @@ RSpec.describe CSV2Avro do
     end
 
     it 'should have a bad row' do
-      File.open('./spec/support/data.bad.tsv', 'r') do |file|
+      File.open('./spec/support/data.bad.csv', 'r') do |file|
         expect(file.read).to eq("id,name,description\n3,,Bras\n")
       end
     end
