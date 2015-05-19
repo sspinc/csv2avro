@@ -8,10 +8,14 @@ RSpec.describe CSV2Avro do
       }
     end
 
-    before do
+    subject do
       ARGV.replace ['./spec/support/data.tsv']
 
-      CSV2Avro.new(options).convert
+      CSV2Avro.new(options)
+    end
+
+    it 'should write the problematic line numbers to STDERR' do
+      expect { subject.convert }.to output("Error in line 4\n").to_stderr
     end
 
     it 'should have a bad row' do

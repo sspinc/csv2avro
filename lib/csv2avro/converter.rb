@@ -54,6 +54,8 @@ class CSV2Avro
 
           bad_rows_writer << line
           bad_rows_writer.flush
+
+          $stderr.puts "Error in line #{reader.lineno}"
         end
       end
     end
