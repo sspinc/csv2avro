@@ -1,4 +1,5 @@
 require 'avro'
+require 'avro_schema'
 require 'forwardable'
 
 class CSV2Avro
