@@ -4,11 +4,12 @@ require 'csv'
 
 class CSV2Avro
   class Converter
-    attr_reader :writer, :bad_rows_writer, :schema, :reader, :csv_options, :converter_options, :header_row, :column_separator
+    attr_reader :writer, :bad_rows_writer, :error_writer, :schema, :reader, :csv_options, :converter_options, :header_row, :column_separator
 
-    def initialize(reader, writer, bad_rows_writer, options, schema: schema)
+    def initialize(reader, writer, bad_rows_writer, error_writer, options, schema: schema)
       @writer = writer
       @bad_rows_writer = bad_rows_writer
+      @error_writer = error_writer
       @schema = schema
 
       @column_separator = options[:delimiter] || ','
@@ -44,8 +45,8 @@ class CSV2Avro
           convert_fields!(row, fields_to_convert)
 
           begin
-              writer.write(row)
-              writer.flush
+            writer.write(row)
+            writer.flush
           rescue
             if bad_rows_writer.size == 0
               bad_rows_writer << header_row + "\n"
