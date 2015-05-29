@@ -408,6 +408,17 @@ RSpec.describe CSV2Avro::Converter do
       before do
         CSV2Avro::Converter.new(reader, writer, bad_rows_writer, error_writer, { delimiter: "\t" }, schema: schema).convert
       end
+
+      it 'should have the bad data in the original form' do
+        expect(bad_rows_writer.string).to eq(
+          "id\ttitle\tdescription\n1\t\tdresses\n4\t\tfemale-shoes\n"
+        )
+      end
+
+      it 'should have an error' do
+        expect(error_writer.string).to eq(
+          "line 2: Missing value at name\nline 5: Missing value at name\n"
+        )
       end
 
       it 'should store the data with the given schema' do
@@ -416,12 +427,6 @@ RSpec.describe CSV2Avro::Converter do
             { 'id'=>2, 'name'=>'female-tops', 'description'=>nil },
             { 'id'=>3, 'name'=>'female-bottoms', 'description'=>nil }
           ]
-        )
-      end
-
-      it 'should have the bad data in the original form' do
-        expect(bad_rows_writer.string).to eq(
-          "id\ttitle\tdescription\n1\t\tdresses\n4\t\tfemale-shoes\n"
         )
       end
     end

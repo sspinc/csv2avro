@@ -14,8 +14,8 @@ RSpec.describe CSV2Avro do
       CSV2Avro.new(options)
     end
 
-    it 'should write the problematic line numbers to STDERR' do
-      expect { subject.convert }.to output("Error in line 4\n").to_stderr
+    it 'should write the problems to STDERR' do
+      expect { subject.convert }.to output("line 4: Missing value at name\n").to_stderr
     end
 
     it 'should have a bad row' do

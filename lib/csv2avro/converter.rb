@@ -55,7 +55,9 @@ class CSV2Avro
             bad_rows_writer << line
             bad_rows_writer.flush
 
-            $stderr.puts "Error in line #{reader.lineno}"
+            until Avro::Schema.errors.empty? do
+              error_writer << "line #{reader.lineno}: #{Avro::Schema.errors.shift}\n"
+            end
           end
         end
       end
