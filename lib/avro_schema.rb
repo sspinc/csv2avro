@@ -37,8 +37,8 @@ module Avro
               when :union
                 expected_schema.schemas.any?{|s| validate(s, datum, nil, true) }
               when :record, :error, :request
-                expected_schema.fields.all?{|f| validate(f.type, datum[f.name], f.name) } &&
-                  datum.is_a?(Hash)
+                datum.is_a?(Hash) &&
+                  expected_schema.fields.all?{|f| validate(f.type, datum[f.name], f.name) }
               else
                 false # raise "you suck #{expected_schema.inspect} is not allowed."
               end
