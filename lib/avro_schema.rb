@@ -40,7 +40,7 @@ module Avro
                 datum.is_a?(Hash) &&
                   expected_schema.fields.all?{|f| validate(f.type, datum[f.name], f.name) }
               else
-                false # raise "you suck #{expected_schema.inspect} is not allowed."
+                false
               end
 
       if !suppress_error && !valid && name
