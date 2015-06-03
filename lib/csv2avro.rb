@@ -14,7 +14,7 @@ class CSV2Avro
   end
 
   def convert
-    Converter.new(reader, writer, bad_rows_writer, options, schema: schema).convert
+    Converter.new(reader, writer, bad_rows_writer, error_writer, options, schema: schema).convert
   ensure
     writer.close if writer
 
@@ -34,6 +34,7 @@ class CSV2Avro
   end
 
   def reader
+    ARGF.lineno = 0
     ARGF
   end
 
@@ -55,6 +56,10 @@ class CSV2Avro
     name = File.basename(input_path, ext)
 
     "#{dir}/#{name}.avro"
+  end
+
+  def error_writer
+    $stderr
   end
 
   def bad_rows_writer

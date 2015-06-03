@@ -8,10 +8,14 @@ RSpec.describe CSV2Avro do
       }
     end
 
-    before do
+    subject(:converter) do
       ARGV.replace ['./spec/support/data.csv']
 
-      CSV2Avro.new(options).convert
+      CSV2Avro.new(options)
+    end
+
+    it 'should write the problems to STDERR' do
+      expect { converter.convert }.to output("line 4: Missing value at name\n").to_stderr
     end
 
     it 'should have a bad row' do

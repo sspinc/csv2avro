@@ -4,11 +4,12 @@ require 'csv'
 
 class CSV2Avro
   class Converter
-    attr_reader :writer, :bad_rows_writer, :schema, :reader, :csv_options, :converter_options, :header_row, :column_separator
+    attr_reader :writer, :bad_rows_writer, :error_writer, :schema, :reader, :csv_options, :converter_options, :header_row, :column_separator
 
-    def initialize(reader, writer, bad_rows_writer, options, schema: schema)
+    def initialize(reader, writer, bad_rows_writer, error_writer, options, schema: schema)
       @writer = writer
       @bad_rows_writer = bad_rows_writer
+      @error_writer = error_writer
       @schema = schema
 
       @column_separator = options[:delimiter] || ','
@@ -34,26 +35,30 @@ class CSV2Avro
       fields_to_convert = schema.types.reject{ |key, value| value == :string }
 
       reader.each do |line|
-        begin
-          CSV.parse(line, csv_options) do |row|
-            row = row.to_hash
+        CSV.parse(line, csv_options) do |row|
+          row = row.to_hash
 
-            if converter_options[:write_defaults]
-              add_defaults_to_row!(row, defaults)
-            end
+          if converter_options[:write_defaults]
+            add_defaults_to_row!(row, defaults)
+          end
 
-            convert_fields!(row, fields_to_convert)
+          convert_fields!(row, fields_to_convert)
 
+          begin
             writer.write(row)
             writer.flush
-          end
-        rescue
-          if bad_rows_writer.size == 0
-            bad_rows_writer << header_row + "\n"
-          end
+          rescue
+            if bad_rows_writer.size == 0
+              bad_rows_writer << header_row + "\n"
+            end
 
-          bad_rows_writer << line
-          bad_rows_writer.flush
+            bad_rows_writer << line
+            bad_rows_writer.flush
+
+            until Avro::Schema.errors.empty? do
+              error_writer << "line #{reader.lineno}: #{Avro::Schema.errors.shift}\n"
+            end
+          end
         end
       end
     end
