@@ -4,92 +4,87 @@ require 'csv'
 
 class CSV2Avro
   class Converter
-    attr_reader :writer, :bad_rows_writer, :error_writer, :schema, :reader, :csv_options, :converter_options, :header_row, :column_separator
-
     def initialize(reader, writer, bad_rows_writer, error_writer, options, schema: schema)
+      @reader = reader
       @writer = writer
       @bad_rows_writer = bad_rows_writer
       @error_writer = error_writer
       @schema = schema
 
-      @column_separator = options[:delimiter] || ','
+      col_sep = options[:delimiter] || ','
 
-      @reader = reader
-      @header_row = reader.readline.strip
-      header = header_row.split(column_separator)
+      header = @reader.readline.strip.split(col_sep)
 
       init_header_converter
       @csv_options = {
+        col_sep: col_sep,
         headers: header,
+        header_converters: :aliases,
         skip_blanks: true,
-        col_sep: column_separator,
-        header_converters: :aliases
+        write_headers: true
       }
 
-      @converter_options = options
+      @options = options
     end
 
     def convert
-      defaults = schema.defaults if converter_options[:write_defaults]
+      defaults = @schema.defaults if @options[:write_defaults]
 
-      fields_to_convert = schema.types.reject{ |key, value| value == :string }
+      fields_to_convert = @schema.types.reject { |key, value| value == :string }
 
-      reader.each do |line|
+      csv.each do |row|
+        hash = row.to_hash
+
+        if @options[:write_defaults]
+          add_defaults_to_hash!(hash, defaults)
+        end
+
+        convert_fields!(hash, fields_to_convert)
+
         begin
-          CSV.parse(line, csv_options) do |row|
-            row = row.to_hash
+          @writer.write(hash)
+        rescue Avro::IO::AvroTypeError
+          bad_rows_csv << row
 
-            if converter_options[:write_defaults]
-              add_defaults_to_row!(row, defaults)
-            end
-
-            convert_fields!(row, fields_to_convert)
-
-            begin
-              writer.write(row)
-              writer.flush
-            rescue
-              if bad_rows_writer.size == 0
-                bad_rows_writer << header_row + "\n"
-              end
-
-              bad_rows_writer << line
-              bad_rows_writer.flush
-
-              until Avro::Schema.errors.empty? do
-                error_writer << "line #{reader.lineno}: #{Avro::Schema.errors.shift}\n"
-              end
-            end
+          until Avro::Schema.errors.empty? do
+            @error_writer << "line #{@reader.lineno}: #{Avro::Schema.errors.shift}\n"
           end
-        rescue CSV::MalformedCSVError
-          error_writer << "line #{reader.lineno}: Unable to parse\n"
         end
       end
     end
 
     private
 
-    def convert_fields!(row, fields_to_convert)
-      fields_to_convert.each do |key, value|
-        row[key] = begin
+
+    def csv
+      @csv ||= CSV.new(@reader, @csv_options)
+    end
+
+    def bad_rows_csv
+      @bad_rows_csv ||= CSV.new(@bad_rows_writer, @csv_options)
+    end
+
+    def convert_fields!(hash, fields)
+      fields.each do |key, value|
+        hash[key] = begin
           case value
             when :int
-              Integer(row[key])
+              Integer(hash[key])
             when :float, :double
-              Float(row[key])
+              Float(hash[key])
             when :boolean
-              parse_boolean(row[key])
+              parse_boolean(hash[key])
             when :array
-              parse_array(row[key])
+              parse_array(hash[key])
             when :enum
-              row[key].downcase.tr(" ", "_")
+              hash[key].downcase.tr(" ", "_")
           end
         rescue
-          row[key]
+          hash[key]
         end
       end
 
-      row
+      hash
     end
 
     def parse_boolean(value)
@@ -99,27 +94,27 @@ class CSV2Avro
     end
 
     def parse_array(value)
-      delimiter = converter_options[:array_delimiter] || ','
+      delimiter = @options[:array_delimiter] || ','
 
       value.split(delimiter) if value
     end
 
-    def add_defaults_to_row!(row, defaults)
+    def add_defaults_to_hash!(hash, defaults)
       # Add default values to nil cells
-      row.each do |key, value|
-        row[key] = defaults[key] if value.nil?
+      hash.each do |key, value|
+        hash[key] = defaults[key] if value.nil?
       end
 
       # Add default values to missing columns
       defaults.each  do |key, value|
-        row[key] = defaults[key]  unless row.has_key?(key)
+        hash[key] = defaults[key]  unless hash.has_key?(key)
       end
 
-      row
+      hash
     end
 
     def init_header_converter
-      aliases = schema.aliases
+      aliases = @schema.aliases
 
       CSV::HeaderConverters[:aliases] = lambda do |header|
           aliases[header] || header
