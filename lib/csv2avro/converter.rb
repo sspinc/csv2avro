@@ -35,30 +35,34 @@ class CSV2Avro
       fields_to_convert = schema.types.reject{ |key, value| value == :string }
 
       reader.each do |line|
-        CSV.parse(line, csv_options) do |row|
-          row = row.to_hash
+        begin
+          CSV.parse(line, csv_options) do |row|
+            row = row.to_hash
 
-          if converter_options[:write_defaults]
-            add_defaults_to_row!(row, defaults)
-          end
-
-          convert_fields!(row, fields_to_convert)
-
-          begin
-            writer.write(row)
-            writer.flush
-          rescue
-            if bad_rows_writer.size == 0
-              bad_rows_writer << header_row + "\n"
+            if converter_options[:write_defaults]
+              add_defaults_to_row!(row, defaults)
             end
 
-            bad_rows_writer << line
-            bad_rows_writer.flush
+            convert_fields!(row, fields_to_convert)
 
-            until Avro::Schema.errors.empty? do
-              error_writer << "line #{reader.lineno}: #{Avro::Schema.errors.shift}\n"
+            begin
+              writer.write(row)
+              writer.flush
+            rescue
+              if bad_rows_writer.size == 0
+                bad_rows_writer << header_row + "\n"
+              end
+
+              bad_rows_writer << line
+              bad_rows_writer.flush
+
+              until Avro::Schema.errors.empty? do
+                error_writer << "line #{reader.lineno}: #{Avro::Schema.errors.shift}\n"
+              end
             end
           end
+        rescue CSV::MalformedCSVError
+          error_writer << "line #{reader.lineno}: Unable to parse\n"
         end
       end
     end
