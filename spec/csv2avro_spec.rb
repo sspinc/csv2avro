@@ -2,19 +2,14 @@ require 'spec_helper'
 
 RSpec.describe CSV2Avro do
   describe '#convert' do
-    let(:options) do
-      {
-        schema: './spec/support/schema.avsc'
-      }
-    end
+    let(:options) { { schema: './spec/support/schema.avsc' } }
 
-    subject(:converter) do
+    before do
       ARGV.replace ['./spec/support/data.csv']
-
-      CSV2Avro.new(options)
     end
+    subject(:converter) { CSV2Avro.new(options) }
 
-    it 'should write the problems to STDERR' do
+    it 'should write errors to STDERR' do
       expect { converter.convert }.to output("line 4: Missing value at name\n").to_stderr
     end
 
