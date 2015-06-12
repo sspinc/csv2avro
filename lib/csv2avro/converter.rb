@@ -66,7 +66,8 @@ class CSV2Avro
     end
 
     def bad_rows_csv
-      @bad_rows_csv ||= CSV.new(@bad_rows_writer, csv_options)
+      options = csv_options.tap { |hash| hash.delete(:header_converters) }
+      @bad_rows_csv ||= CSV.new(@bad_rows_writer, options)
     end
 
     def add_defaults_to_hash!(hash)
