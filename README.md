@@ -47,7 +47,7 @@ This will uncompress the file and converts it to avro, leaving the original file
 For a full list of available options, run `csv2avro --help`
 ```
 $ csv2avro --help
-Version 1.0.0 of CSV2Avro
+Version 1.0.1 of CSV2Avro
 Usage: csv2avro [options] [file]
     -s, --schema SCHEMA              A file containing the Avro schema. This value is required.
     -b, --bad-rows [BAD_ROWS]        The output location of the bad rows file.
