@@ -8,12 +8,6 @@ Convert CSV files to Avro like a boss.
 
 or if you prefer to live on the edge, just clone this repository and build it from scratch.
 
-You can run the converter within a **Docker** container, you just need to pull the `sspinc/csv2avro` image.
-
-```
-$ docker pull sspinc/csv2avro
-```
-
 ## Usage
 
 ### Basic
@@ -23,12 +17,6 @@ $ csv2avro --schema ./spec/support/schema.avsc ./spec/support/data.csv
 This will process the data.csv file and creates a *data.avro* file and a *data.bad.csv* file with the bad rows.
 
 You can override the bad-rows file location with the `--bad-rows [BAD_ROWS]` option.
-
-### CSV2Avro in Docker
-
-```
-$ docker run sspinc/csv2avro --help
-```
 
 ### Streaming
 ```
