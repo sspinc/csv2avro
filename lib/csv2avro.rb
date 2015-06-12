@@ -29,7 +29,7 @@ class CSV2Avro
   end
 
   def reader
-    ARGF.lineno = 0
+    ARGF.lineno = -1
     ARGF
   end
 
