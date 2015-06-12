@@ -29,14 +29,14 @@ class CSV2Avro
           bad_rows_csv << row
 
           until Avro::Schema.errors.empty? do
-            @error_writer << "line #{line_number}: #{Avro::Schema.errors.shift}\n"
+            @error_writer.puts("line #{line_number}: #{Avro::Schema.errors.shift}")
           end
         end
       end
 
       @writer.flush
     rescue CSV::MalformedCSVError
-      @error_writer << "line #{line_number}: Unable to parse\n"
+      @error_writer.puts("line #{line_number}: Unable to parse")
     end
 
     private
