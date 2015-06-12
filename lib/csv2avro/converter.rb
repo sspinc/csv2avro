@@ -71,7 +71,7 @@ class CSV2Avro
     def add_defaults_to_hash!(hash)
       # Add default values to empty/missing fields
       @schema.defaults.each  do |key, value|
-        hash[key] = @schema.defaults[key] if value.nil? or !hash.has_key?(key)
+        hash[key] = @schema.defaults[key] if hash[key].nil? or !hash.has_key?(key)
       end
     end
 
