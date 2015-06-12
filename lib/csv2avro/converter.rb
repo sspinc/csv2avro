@@ -68,6 +68,13 @@ class CSV2Avro
       @bad_rows_csv ||= CSV.new(@bad_rows_writer, csv_options)
     end
 
+    def add_defaults_to_hash!(hash)
+      # Add default values to empty/missing fields
+      @schema.defaults.each  do |key, value|
+        hash[key] = @schema.defaults[key] if value.nil? or !hash.has_key?(key)
+      end
+    end
+
     def convert_fields!(hash)
       @schema.types.each do |key, value|
         hash[key] = begin
@@ -102,13 +109,6 @@ class CSV2Avro
 
     def parse_array(value)
       value.split(array_delimiter) if value
-    end
-
-    def add_defaults_to_hash!(hash)
-      # Add default values to empty/missing fields
-      @schema.defaults.each  do |key, value|
-        hash[key] = @schema.defaults[key] if value.nil? or !hash.has_key?(key)
-      end
     end
   end
 end
