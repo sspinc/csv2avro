@@ -47,7 +47,7 @@ module Avro
         if datum.nil? && expected_type != :null
           @errors << "Missing value at #{name}"
         else
-          @errors << "'#{datum}' at #{name} does'n match the type '#{expected_schema.to_s}'"
+          @errors << "'#{datum}' at #{name} doesn't match the type '#{expected_schema.to_s}'"
         end
       end
 

@@ -1,4 +1,5 @@
 id,name,description
-1,dresses,Dresses
+1,dresses,"Dresses"
 2,female-tops,
-3,,Bras
+3,,"Bras"
+4,male-tops,"Male Tops""

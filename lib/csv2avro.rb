@@ -17,12 +17,7 @@ class CSV2Avro
     Converter.new(reader, writer, bad_rows_writer, error_writer, options, schema: schema).convert
   ensure
     writer.close if writer
-
-    if bad_rows_writer.size == 0
-      File.delete(bad_rows_uri)
-    elsif bad_rows_writer
-      bad_rows_writer.close
-    end
+    bad_rows_writer.close
   end
 
   private
@@ -34,7 +29,7 @@ class CSV2Avro
   end
 
   def reader
-    ARGF.lineno = 0
+    ARGF.lineno = -1
     ARGF
   end
 
