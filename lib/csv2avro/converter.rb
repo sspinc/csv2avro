@@ -33,6 +33,7 @@ class CSV2Avro
           end
         end
       end
+      @writer.flush
     end
 
     private
