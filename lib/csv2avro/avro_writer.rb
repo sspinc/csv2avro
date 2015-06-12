@@ -17,11 +17,11 @@ class CSV2Avro
     end
 
     def writer_schema
-      avro_writer.datum_writer.writers_schema
+      @avro_writer.datum_writer.writers_schema
     end
 
     def write(hash)
-      avro_writer << hash
+      @avro_writer << hash
     end
   end
 end
