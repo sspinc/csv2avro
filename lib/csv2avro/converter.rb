@@ -37,6 +37,7 @@ class CSV2Avro
       @writer.flush
     rescue CSV::MalformedCSVError
       @error_writer.puts("line #{line_number}: Unable to parse")
+      retry
     end
 
     private
