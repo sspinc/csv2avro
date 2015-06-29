@@ -17,7 +17,13 @@ class CSV2Avro
     end
 
     def convert
-      csv.each do |row|
+      while not csv.eof? do
+        begin
+          row = csv.shift
+        rescue CSV::MalformedCSVError
+          @error_writer.puts("line #{line_number}: Unable to parse")
+          next
+        end
         hash = row.to_hash
 
         add_defaults_to_hash!(hash) if @options[:write_defaults]
@@ -33,11 +39,7 @@ class CSV2Avro
           end
         end
       end
-
       @writer.flush
-    rescue CSV::MalformedCSVError
-      @error_writer.puts("line #{line_number}: Unable to parse")
-      retry
     end
 
     private
