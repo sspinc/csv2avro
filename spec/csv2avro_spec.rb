@@ -10,7 +10,7 @@ RSpec.describe CSV2Avro do
     subject(:converter) { CSV2Avro.new(options) }
 
     it 'should write errors to STDERR' do
-      expect { converter.convert }.to output("line 4: Missing value at name\nline 7: Unable to parse\n").to_stderr
+      expect { converter.convert }.to output("line 4: Missing value at name\nline 5: Unable to parse\n").to_stderr
     end
 
     it 'should have a bad row' do
@@ -24,9 +24,7 @@ RSpec.describe CSV2Avro do
         expect(AvroReader.new(file).read).to eq(
           [
             { 'id'=>1, 'name'=>'dresses',     'description'=>'Dresses' },
-            { 'id'=>2, 'name'=>'female-tops', 'description'=>nil },
-            { 'id'=>4, 'name'=>'male-tops',   'description'=>"Male Tops\nand Male Shirts"},
-            { 'id'=>6, 'name'=>'male-shoes', 'description'=>'Male Shoes'}
+            { 'id'=>2, 'name'=>'female-tops', 'description'=>nil }
           ]
         )
       end

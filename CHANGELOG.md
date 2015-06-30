@@ -3,11 +3,6 @@
 All notable changes to this project are documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 1.0.2 (2015-06-29; [compare](https://github.com/sspinc/csv2avro/compare/1.0.1...1.0.2))
-
-### Fixed
- * Continue on parsing errors
-
 ## 1.0.1 (2015-06-12; [compare](https://github.com/sspinc/csv2avro/compare/1.0.0...1.0.1))
 
 ### Fixed

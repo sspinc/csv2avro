@@ -6,8 +6,8 @@ require 'csv2avro/version'
 Gem::Specification.new do |spec|
   spec.name          = "csv2avro"
   spec.version       = CSV2Avro::VERSION
-  spec.authors       = ["Peter Ableda", "Peter Marton"]
-  spec.email         = ["scotty@secretsaucepartners.com", "martonpe@secretsaucepartners.com"]
+  spec.authors       = ["Peter Ableda"]
+  spec.email         = ["scotty@secretsaucepartners.com"]
   spec.summary       = %q{Convert CSV files to Avro}
   spec.description   = %q{Convert CSV files to Avro like a boss.}
   spec.homepage      = ""
