@@ -55,5 +55,5 @@ rescue Exception => e
   $stderr.puts 'Uh oh, something went wrong!'
   $stderr.puts e.message
   $stderr.puts e.backtrace.join("\n")
-  exit 2
+  exit 1
 end
