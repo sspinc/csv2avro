@@ -49,10 +49,11 @@ begin
   CSV2Avro.new(options).convert
 rescue OptionParser::MissingArgument => ex
   puts ex.message
-
   puts option_parser
+  exit 2
 rescue Exception => e
   puts 'Uh oh, something went wrong!'
   puts e.message
   puts e.backtrace.join("\n")
+  exit 2
 end
