@@ -32,20 +32,20 @@ RSpec.describe CSV2Avro do
       end
     end
 
-    ARGV.replace ['./spec/support/data_parenthesized.csv']
+    ARGV.replace ['./spec/support/data_quoted.csv']
     subject(:converter) { CSV2Avro.new(options) }
 
-    it 'should write errors to STDERR if parenthesized' do
+    it 'should write errors to STDERR if header is quoted' do
       expect { converter.convert }.to output("line 4: Missing value at name\nline 7: Unable to parse\n").to_stderr
     end
 
-    it 'should have a bad row if parenthesized' do
+    it 'should have a bad row if header is quoted' do
       File.open('./spec/support/data.bad.csv', 'r') do |file|
         expect(file.read).to eq("id,name,description\n3,,Bras\n")
       end
     end
 
-    it 'should contain the avro data if parenthesized' do
+    it 'should contain the avro data if header is quoted' do
       File.open('./spec/support/data.avro', 'r') do |file|
         expect(AvroReader.new(file).read).to eq(
           [
