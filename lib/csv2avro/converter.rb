@@ -13,7 +13,7 @@ class CSV2Avro
       @schema = schema
 
       # read header row explicitly
-      @header = @reader.readline.strip.split(col_sep)
+      @header = @reader.readline.strip.split(col_sep).map{ |col| col.gsub('"','') }
     end
 
     def convert
