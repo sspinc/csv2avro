@@ -21,7 +21,9 @@ class CSV2Avro
         begin
           row = csv.shift
         rescue CSV::MalformedCSVError
-          @error_writer.puts("line #{line_number}: Unable to parse")
+          error_msg = "row #{row_number}: Unable to parse"
+          @error_writer.puts(error_msg)
+          @bad_rows_writer.puts(error_msg)
           next
         end
         hash = row.to_hash
@@ -32,10 +34,10 @@ class CSV2Avro
         begin
           @writer.write(hash)
         rescue Avro::IO::AvroTypeError
-          bad_rows_csv << row
-
           until Avro::Schema.errors.empty? do
-            @error_writer.puts("line #{line_number}: #{Avro::Schema.errors.shift}")
+            error_msg = "row #{row_number}: #{Avro::Schema.errors.shift}"
+            @error_writer.puts(error_msg)
+            @bad_rows_writer.puts(error_msg)
           end
         end
       end
@@ -71,12 +73,7 @@ class CSV2Avro
       @csv ||= CSV.new(@reader, csv_options)
     end
 
-    def bad_rows_csv
-      options = csv_options.tap { |hash| hash.delete(:header_converters) }
-      @bad_rows_csv ||= CSV.new(@bad_rows_writer, options)
-    end
-
-    def line_number
+    def row_number
       @reader.lineno + 1
     end
 
