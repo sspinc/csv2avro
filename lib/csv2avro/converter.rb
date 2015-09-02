@@ -34,11 +34,9 @@ class CSV2Avro
         begin
           @writer.write(hash)
         rescue Avro::IO::AvroTypeError
-          until Avro::Schema.errors.empty? do
-            error_msg = "row #{row_number}: #{Avro::Schema.errors.shift}"
-            @error_writer.puts(error_msg)
-            @bad_rows_writer.puts(error_msg)
-          end
+          error_msg = "row #{row_number}: #{Avro::Schema.errors.join(', ')}"
+          @error_writer.puts(error_msg)
+          @bad_rows_writer.puts(error_msg)
         end
       end
       @writer.flush

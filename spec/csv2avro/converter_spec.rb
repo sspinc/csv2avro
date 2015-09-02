@@ -351,7 +351,7 @@ RSpec.describe CSV2Avro::Converter do
         CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, error_writer, { delimiter: "\t" }, schema: schema).convert
       end
 
-      it 'should have the bad data in the original form' do
+      it 'should report the bad rows correctly' do
         expect(bad_rows_writer.string).to eq(
           "row 2: Missing value at name\nrow 5: Missing value at name\n"
         )

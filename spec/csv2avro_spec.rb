@@ -9,7 +9,7 @@ RSpec.describe CSV2Avro do
     end
     subject(:converter) { CSV2Avro.new(options) }
 
-    bad_rows_output = "row 4: Missing value at name\nrow 7: Unable to parse\nrow 9: Missing value at id\nrow 9: Missing value at name\n"
+    bad_rows_output = "row 4: Missing value at name\nrow 7: Unable to parse\nrow 9: Missing value at name, Missing value at id\n"
     it 'should write errors to STDERR' do
       expect { converter.convert }.to output(bad_rows_output).to_stderr
     end
