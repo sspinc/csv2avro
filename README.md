@@ -14,13 +14,13 @@ or if you prefer to live on the edge, just clone this repository and build it fr
 ```
 $ csv2avro --schema ./spec/support/schema.avsc ./spec/support/data.csv
 ```
-This will process the data.csv file and creates a *data.avro* file and a *data.bad.csv* file with the bad rows.
+This will process the data.csv file and creates a *data.avro* file and a *data.bad* file with a report of the bad rows.
 
-You can override the bad-rows file location with the `--bad-rows [BAD_ROWS]` option.
+You can override the bad rows report file location with the `--bad-rows [BAD_ROWS]` option.
 
 ### Streaming
 ```
-$ cat ./spec/support/data.csv | csv2avro --schema ./spec/support/schema.avsc --bad-rows ./spec/support/data.bad.csv > ./spec/support/data.avro
+$ cat ./spec/support/data.csv | csv2avro --schema ./spec/support/schema.avsc --bad-rows ./spec/support/data.bad > ./spec/support/data.avro
 ```
 This will process the *input stream* and push the avro data to the *output stream*. If you're working with streams you will need to specify the `--bad-rows` location.
 
@@ -29,7 +29,7 @@ This will process the *input stream* and push the avro data to the *output strea
 #### AWS S3 storage
 
 ```
-aws s3 cp s3://csv-bucket/transactions.csv - | csv2avro --schema ./transactions.avsc --bad-rows ./transactions.bad.csv | aws s3 cp - s3://avro-bucket/transactions.avro
+aws s3 cp s3://csv-bucket/transactions.csv - | csv2avro --schema ./transactions.avsc --bad-rows ./transactions.bad | aws s3 cp - s3://avro-bucket/transactions.avro
 ```
 
 This will stream your file stored in AWS S3, converts the data and pushes it back to S3. For more information, please check the [AWS CLI documentation](http://docs.aws.amazon.com/cli/latest/reference/s3/index.html).
@@ -37,7 +37,7 @@ This will stream your file stored in AWS S3, converts the data and pushes it bac
 #### Convert compressed files
 
 ```
-gunzip -c ./spec/support/data.csv.gz | csv2avro --schema ./spec/support/schema.avsc --bad-rows ./spec/support/data.bad.csv > ./spec/support/data.avro
+gunzip -c ./spec/support/data.csv.gz | csv2avro --schema ./spec/support/schema.avsc --bad-rows ./spec/support/data.bad > ./spec/support/data.avro
 ```
 
 This will uncompress the file and converts it to avro, leaving the original file intact.
@@ -50,7 +50,7 @@ $ csv2avro --help
 Version 1.0.1 of CSV2Avro
 Usage: csv2avro [options] [file]
     -s, --schema SCHEMA              A file containing the Avro schema. This value is required.
-    -b, --bad-rows [BAD_ROWS]        The output location of the bad rows file.
+    -b, --bad-rows [BAD_ROWS]        The output location of the bad rows report file.
     -d, --delimiter [DELIMITER]      Field delimiter. If none specified, then comma is used as the delimiter.
     -a [ARRAY_DELIMITER],            Array field delimiter. If none specified, then comma is used as the delimiter.
         --array-delimiter

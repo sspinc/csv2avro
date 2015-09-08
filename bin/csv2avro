@@ -14,7 +14,7 @@ option_parser = OptionParser.new do |opts|
     options[:schema] = path
   end
 
-  opts.on('-b', '--bad-rows [BAD_ROWS]', 'The output location of the bad rows file.') do |path|
+  opts.on('-b', '--bad-rows [BAD_ROWS]', 'The output location of the bad rows report file.') do |path|
     options[:bad_rows] = path
   end
 

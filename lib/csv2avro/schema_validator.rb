@@ -1,12 +1,19 @@
-module Avro
-  class Schema
-    @errors = []
+require 'avro/schema'
 
-    class << self
-      attr_accessor :errors
+class CSV2Avro
+  class SchemaValidator
+
+    attr_reader :errors
+
+    def initialize
+      @errors = []
     end
 
-    def self.validate(expected_schema, datum, name=nil, suppress_error=false)
+    def clear
+      @errors.clear
+    end
+
+    def validate(expected_schema, datum, name=nil, suppress_error=false)
       expected_type = expected_schema.type_sym
 
       valid = case expected_type
@@ -18,10 +25,10 @@ module Avro
                 datum.is_a? String
               when :int
                 (datum.is_a?(Fixnum) || datum.is_a?(Bignum)) &&
-                    (INT_MIN_VALUE <= datum) && (datum <= INT_MAX_VALUE)
+                    (Avro::Schema::INT_MIN_VALUE <= datum) && (datum <= Avro::Schema::INT_MAX_VALUE)
               when :long
                 (datum.is_a?(Fixnum) || datum.is_a?(Bignum)) &&
-                    (LONG_MIN_VALUE <= datum) && (datum <= LONG_MAX_VALUE)
+                    (Avro::Schema::LONG_MIN_VALUE <= datum) && (datum <= Avro::Schema::LONG_MAX_VALUE)
               when :float, :double
                 datum.is_a?(Float) || datum.is_a?(Fixnum) || datum.is_a?(Bignum)
               when :fixed
@@ -38,12 +45,14 @@ module Avro
                 expected_schema.schemas.any?{|s| validate(s, datum, nil, true) }
               when :record, :error, :request
                 datum.is_a?(Hash) &&
-                  expected_schema.fields.all?{|f| validate(f.type, datum[f.name], f.name) }
+                  expected_schema.fields.reduce(true){|result, f|
+                  validate_result = validate(f.type, datum[f.name], f.name)
+                  result && validate_result }
               else
                 false
               end
 
-      if !suppress_error && !valid && name
+      if !valid && name
         if datum.nil? && expected_type != :null
           @errors << "Missing value at #{name}"
         else
