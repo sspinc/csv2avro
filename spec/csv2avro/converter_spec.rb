@@ -353,13 +353,13 @@ RSpec.describe CSV2Avro::Converter do
 
       it 'should report the bad rows correctly' do
         expect(bad_rows_writer.string).to eq(
-          "row 2: Missing value at name\nrow 5: Missing value at name\n"
+          "L2: Missing value at name\nL5: Missing value at name\n"
         )
       end
 
       it 'should have an error' do
         expect(error_writer.string).to eq(
-          "row 2: Missing value at name\nrow 5: Missing value at name\n"
+          "L2: Missing value at name\nL5: Missing value at name\n"
         )
       end
 

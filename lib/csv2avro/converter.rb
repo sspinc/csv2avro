@@ -21,7 +21,7 @@ class CSV2Avro
         begin
           row = csv.shift
         rescue CSV::MalformedCSVError
-          error_msg = "row #{row_number}: Unable to parse"
+          error_msg = "L#{row_number}: Unable to parse"
           @error_writer.puts(error_msg)
           @bad_rows_writer.puts(error_msg)
           next
@@ -34,7 +34,7 @@ class CSV2Avro
         begin
           @writer.write(hash)
         rescue CSV2Avro::SchemaValidationError => e
-          error_msg = "row #{row_number}: #{e.errors.join(', ')}"
+          error_msg = "L#{row_number}: #{e.errors.join(', ')}"
           @error_writer.puts(error_msg)
           @bad_rows_writer.puts(error_msg)
         end
