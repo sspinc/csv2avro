@@ -1,4 +1,4 @@
-id,name,description
+"id","name","description"
 1,dresses,Dresses
 "2","female-tops",
 "3",,"Bras"
@@ -6,5 +6,3 @@ id,name,description
 and Male Shirts"
 "5","female-shoes","\"Shoes\" for women"
 "6","male-shoes","Male Shoes"
-,,"Male Shoes"
-"male-shoes",,"Male Shoes"

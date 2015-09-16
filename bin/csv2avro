@@ -14,7 +14,7 @@ option_parser = OptionParser.new do |opts|
     options[:schema] = path
   end
 
-  opts.on('-b', '--bad-rows [BAD_ROWS]', 'The output location of the bad rows file.') do |path|
+  opts.on('-b', '--bad-rows [BAD_ROWS]', 'The output location of the bad rows report file.') do |path|
     options[:bad_rows] = path
   end
 
@@ -35,7 +35,7 @@ option_parser = OptionParser.new do |opts|
   end
 
   opts.on('-h', '--help', 'Prints help') do
-    puts opts
+    $stderr.puts opts
     exit
   end
 end
@@ -48,11 +48,12 @@ begin
 
   CSV2Avro.new(options).convert
 rescue OptionParser::MissingArgument => ex
-  puts ex.message
-
-  puts option_parser
+  $stderr.puts ex.message
+  $stderr.puts option_parser
+  exit 2
 rescue Exception => e
-  puts 'Uh oh, something went wrong!'
-  puts e.message
-  puts e.backtrace.join("\n")
+  $stderr.puts 'Uh oh, something went wrong!'
+  $stderr.puts e.message
+  $stderr.puts e.backtrace.join("\n")
+  exit 1
 end

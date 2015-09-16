@@ -1,6 +1,6 @@
 require 'avro'
-require 'avro_schema'
 require 'forwardable'
+require 'csv2avro/datum_writer'
 
 class CSV2Avro
   class AvroWriter
@@ -12,7 +12,7 @@ class CSV2Avro
     def_delegators :avro_writer, :flush, :close
 
     def initialize(writer, schema)
-      datum_writer = Avro::IO::DatumWriter.new(schema.avro_schema)
+      datum_writer = CSV2Avro::DatumWriter.new(schema.avro_schema)
       @avro_writer = Avro::DataFile::Writer.new(writer, datum_writer, schema.avro_schema)
     end
 

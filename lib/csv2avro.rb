@@ -68,6 +68,6 @@ class CSV2Avro
     ext = File.extname(input_path)
     name = File.basename(input_path, ext)
 
-    "#{dir}/#{name}.bad#{ext}"
+    "#{dir}/#{name}.bad"
   end
 end
