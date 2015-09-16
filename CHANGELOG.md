@@ -3,17 +3,27 @@
 All notable changes to this project are documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 1.0.2 (2015-06-29; [compare](https://github.com/sspinc/csv2avro/compare/1.0.1...1.0.2))
+## 1.1.0 (2015-09-16) [compare](https://github.com/sspinc/csv2avro/compare/1.0.2...1.1.0))
+
+### Changed
+ * Write usage and error messages to stderr
+ * Exit code 1 for general errors, 2 for missing arguments
+ * Bad rows report with error causes instead of bad rows csv
+
+### Fixed
+ * Handle quoted headers
+
+## 1.0.2 (2015-06-29) [compare](https://github.com/sspinc/csv2avro/compare/1.0.1...1.0.2))
 
 ### Fixed
  * Continue on parsing errors
 
-## 1.0.1 (2015-06-12; [compare](https://github.com/sspinc/csv2avro/compare/1.0.0...1.0.1))
+## 1.0.1 (2015-06-12) [compare](https://github.com/sspinc/csv2avro/compare/1.0.0...1.0.1))
 
 ### Fixed
  * CSV parsing issues
 
-## 1.0.0 (2015-06-05; [compare](https://github.com/sspinc/csv2avro/compare/0.4.0...1.0.0))
+## 1.0.0 (2015-06-05) [compare](https://github.com/sspinc/csv2avro/compare/0.4.0...1.0.0))
 
 ### Added
  * Usage description to readme
@@ -23,7 +33,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
  * Docker image entrypoint
 
-## 0.4.0 (2015-05-07; [compare](https://github.com/sspinc/csv2avro/compare/0.3.0...0.4.0))
+## 0.4.0 (2015-05-07) [compare](https://github.com/sspinc/csv2avro/compare/0.3.0...0.4.0))
 
 ### Added
  * Streaming support (#7)
@@ -38,7 +48,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
  * Build project into Docker image (#9)
 
-## 0.3.0 (2015-04-28; [compare](https://github.com/sspinc/csv2avro/compare/0.1.0...0.3.0))
+## 0.3.0 (2015-04-28) [compare](https://github.com/sspinc/csv2avro/compare/0.1.0...0.3.0))
 
 ### Added
  * Docker support (#6)
