@@ -9,14 +9,15 @@ class CSV2Avro
     ERROR = 'ERROR'
     FATAL = 'FATAL'
 
-    def self.puts(message:, event: nil, metrics: nil, level: INFO)
+    def self.puts(message: nil, event: nil, metrics: nil, level: INFO)
       log_item = {
         app: app,
         host: host,
         level: level,
-        message: message,
-      }.to_json
-      output.puts log_item
+      }
+      log_item[:message] = message if message
+      log_item[:event] = event.to_hash if event
+      output.puts log_item.to_json
     end
 
     private

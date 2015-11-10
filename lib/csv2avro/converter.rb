@@ -1,14 +1,16 @@
 require 'csv2avro/schema'
 require 'csv2avro/avro_writer'
+require 'csv2avro/event'
 require 'csv'
 
 class CSV2Avro
   class Converter
-    def initialize(reader, writer, bad_rows_writer, error_writer, options, schema: schema)
+    def initialize(reader, writer, bad_rows_writer, error_writer, input_path, options, schema: schema)
       @reader = reader
       @writer = writer
       @bad_rows_writer = bad_rows_writer
       @error_writer = error_writer
+      @input_path = input_path
       @options = options
       @schema = schema
 
@@ -22,7 +24,14 @@ class CSV2Avro
           row = csv.shift
         rescue CSV::MalformedCSVError
           error_msg = "L#{row_number}: Unable to parse"
-          @error_writer.puts(message: error_msg, level: Log::ERROR)
+          @error_writer.puts(message: error_msg,
+                             event: Event.new('parse_error',
+                                              true,
+                                              {
+                                                filename: File.basename(@input_path),
+                                                line_no: row_number
+                                              }),
+                             level: Log::ERROR)
           @bad_rows_writer.puts(error_msg)
           next
         end
@@ -35,7 +44,15 @@ class CSV2Avro
           @writer.write(hash)
         rescue CSV2Avro::SchemaValidationError => e
           error_msg = "L#{row_number}: #{e.errors.join(', ')}"
-          @error_writer.puts(message: error_msg, level: Log::ERROR)
+          @error_writer.puts(message: error_msg,
+                             event: Event.new('schema_violation',
+                                              true,
+                                              {
+                                                filename: File.basename(@input_path),
+                                                line_no: row_number,
+                                                schema_violations: e.errors
+                                              }),
+                             level: Log::ERROR)
           @bad_rows_writer.puts(error_msg)
         end
       end

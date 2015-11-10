@@ -1,6 +1,7 @@
 require 'csv2avro/converter'
 require 'csv2avro/version'
 require 'csv2avro/log'
+require 'csv2avro/event'
 
 class CSV2Avro
   attr_reader :input_path, :schema_path, :bad_rows_path, :stdout_option, :options
@@ -12,11 +13,11 @@ class CSV2Avro
     @stdout_option = !input_path || options.delete(:stdout)
 
     @options = options
-    Log.puts(message: "Started processing #{File.basename(input_path)}")
+    Log.puts(event: Event.new('started_processing', true, {filename: File.basename(input_path)}))
   end
 
   def convert
-    Converter.new(reader, writer, bad_rows_writer, error_writer, options, schema: schema).convert
+    Converter.new(reader, writer, bad_rows_writer, error_writer, input_path, options, schema: schema).convert
   ensure
     writer.close if writer
     bad_rows_writer.close
