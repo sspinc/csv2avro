@@ -3,7 +3,7 @@ require 'json'
 module Log
   class Event
 
-    def initialize(name, monitored=false, context={})
+    def initialize(name,  context, monitored: false)
       @name = name
       @monitored = monitored
       @context = context
