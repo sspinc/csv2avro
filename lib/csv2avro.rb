@@ -59,6 +59,10 @@ class CSV2Avro
     end
   end
 
+  def input_filename
+    File.basename(input_path)
+  end
+
   def avro_uri
     dir = File.dirname(input_path)
     ext = File.extname(input_path)
