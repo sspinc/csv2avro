@@ -1,5 +1,3 @@
-require 'json'
-
 module Log
   class Event
 
