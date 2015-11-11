@@ -3,7 +3,6 @@
 $LOAD_PATH << File.dirname(__FILE__) + '/../lib' if $0 == __FILE__
 require 'optparse'
 require 'csv2avro'
-require 'csv2avro/log'
 
 options = {}
 
@@ -51,12 +50,12 @@ begin
 rescue OptionParser::MissingArgument => ex
   $stderr.puts ex.message
   $stderr.puts option_parser
-  CSV2Avro::Log.puts(message: "#{ex.message}", level: CSV2Avro::Log::FATAL)
+  CSV2Avro.log.fatal(message: "#{ex.message}")
   exit 2
 rescue Exception => e
   $stderr.puts 'Uh oh, something went wrong!'
   $stderr.puts e.message
   $stderr.puts e.backtrace.join("\n")
-  CSV2Avro::Log.puts(message: "processing failed: #{e.message}", level: CSV2Avro::Log::FATAL)
+  CSV2Avro.log.fatal(message: "processing failed: #{e.message}")
   exit 1
 end

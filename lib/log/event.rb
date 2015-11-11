@@ -1,6 +1,6 @@
 require 'json'
 
-class CSV2Avro
+module Log
   class Event
 
     def initialize(name, monitored=false, context={})

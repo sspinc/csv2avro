@@ -1,6 +1,6 @@
 require 'json'
 
-class CSV2Avro
+module Log
   class Metric
 
     def initialize(name, value, type)

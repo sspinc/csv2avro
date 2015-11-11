@@ -1,10 +1,18 @@
+require 'logger'
 require 'csv2avro/converter'
 require 'csv2avro/version'
-require 'csv2avro/log'
-require 'csv2avro/event'
+require 'log/event'
+require 'log/json_formatter'
 
 class CSV2Avro
   attr_reader :input_path, :schema_path, :bad_rows_path, :stdout_option, :options
+
+  def self.log
+    @log ||= Logger.new(STDOUT).tap do |log|
+      log.formatter = Log::JSONFormatter.new
+      log.progname = 'csv2avro'
+    end
+  end
 
   def initialize(options)
     @input_path = ARGV.first
@@ -16,11 +24,11 @@ class CSV2Avro
   end
 
   def convert
-    log_writer.puts(event: Event.new('started_processing', true, {filename: File.basename(input_path)}))
+    log_writer.info(event: Log::Event.new('started_processing', true, {filename: File.basename(input_path)}))
 
     Converter.new(reader, writer, bad_rows_writer, log_writer, input_path, options, schema: schema).convert
 
-    log_writer.puts(event: Event.new('processing_done', true, {filename: File.basename(input_path)}))
+    log_writer.info(event: Log::Event.new('processing_done', true, {filename: File.basename(input_path)}))
   ensure
     writer.close if writer
     bad_rows_writer.close
@@ -60,7 +68,7 @@ class CSV2Avro
   end
 
   def log_writer
-    Log
+    CSV2Avro.log
   end
 
   def bad_rows_writer
