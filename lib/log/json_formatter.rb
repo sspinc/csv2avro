@@ -9,7 +9,6 @@ module Log
 
     def call(severity, time, progname, msg)
       log_item = {
-        host: host,
         app: @appname,
         level: severity,
       }
@@ -18,12 +17,6 @@ module Log
       log_item[:metrics] = msg[:metrics].map { |metric| metric.to_hash } if msg[:metrics]
 
       log_item.to_json + "\n"
-    end
-
-    private
-
-    def host
-      @host ||= `hostname`.strip
     end
 
   end
