@@ -6,12 +6,11 @@ require 'csv'
 
 class CSV2Avro
   class Converter
-    def initialize(reader, writer, bad_rows_writer, log_writer, input_path, options, schema: schema)
+    def initialize(reader, writer, bad_rows_writer, filename, options, schema: schema)
       @reader = reader
       @writer = writer
       @bad_rows_writer = bad_rows_writer
-      @log_writer = log_writer
-      @input_path = input_path
+      @filename = filename
       @options = options
       @schema = schema
 
@@ -21,18 +20,12 @@ class CSV2Avro
 
     def convert
       while not csv.eof? do
-        @log_writer.info(metrics: [Log::Metric.new('lines_processed', row_number, 'counter')]) if row_number % 1000 == 0
+        CSV2Avro.log.info(metrics: [Log::Metric.new('lines_processed', row_number, 'counter')]) if row_number % 1000 == 0
         begin
           row = csv.shift
         rescue CSV::MalformedCSVError
           error_msg = "L#{row_number}: Unable to parse"
-          @log_writer.error(message: error_msg,
-                           event: Log::Event.new('parse_error',
-                                            true,
-                                            {
-                                              filename: File.basename(@input_path),
-                                              line_no: row_number
-                                            }))
+          CSV2Avro.log.error(event: Log::Event.new('parse_error', {filename: @filename, line: row_number}))
           @bad_rows_writer.puts(error_msg)
           next
         end
@@ -45,19 +38,14 @@ class CSV2Avro
           @writer.write(hash)
         rescue CSV2Avro::SchemaValidationError => e
           error_msg = "L#{row_number}: #{e.errors.join(', ')}"
-          @log_writer.error(message: error_msg,
-                           event: Log::Event.new('schema_violation',
-                                            true,
-                                            {
-                                              filename: File.basename(@input_path),
-                                              line_no: row_number,
-                                              schema_violations: e.errors
-                                            }))
+          e.errors.each do |error|
+            CSV2Avro.log.error(event: Log::Event.new('schema_violation', { filename: @filename, line: row_number, cause: error }))
+          end
           @bad_rows_writer.puts(error_msg)
         end
       end
       @writer.flush
-      @log_writer.info(metrics: [Log::Metric.new('lines_processed', row_number, 'counter')])
+      CSV2Avro.log.info(metrics: [Log::Metric.new('lines_processed', row_number, 'counter')])
     end
 
     private

@@ -24,11 +24,11 @@ class CSV2Avro
   end
 
   def convert
-    log_writer.info(event: Log::Event.new('started_processing', true, {filename: File.basename(input_path)}))
+    CSV2Avro.log.info(event: Log::Event.new('started_converting', {filename: input_filename}, monitored: true))
 
-    Converter.new(reader, writer, bad_rows_writer, log_writer, input_path, options, schema: schema).convert
+    Converter.new(reader, writer, bad_rows_writer, input_filename, options, schema: schema).convert
 
-    log_writer.info(event: Log::Event.new('processing_done', true, {filename: File.basename(input_path)}))
+    CSV2Avro.log.info(event: Log::Event.new('finished_converting', {filename: input_filename}, monitored: true))
   ensure
     writer.close if writer
     bad_rows_writer.close
@@ -65,10 +65,6 @@ class CSV2Avro
     name = File.basename(input_path, ext)
 
     "#{dir}/#{name}.avro"
-  end
-
-  def log_writer
-    CSV2Avro.log
   end
 
   def bad_rows_writer
