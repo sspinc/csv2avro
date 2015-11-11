@@ -9,8 +9,7 @@ class CSV2Avro
 
   def self.log
     @log ||= Logger.new(STDOUT).tap do |log|
-      log.formatter = Log::JSONFormatter.new
-      log.progname = 'csv2avro'
+      log.formatter = Log::JSONFormatter.new('csv2avro')
     end
   end
 

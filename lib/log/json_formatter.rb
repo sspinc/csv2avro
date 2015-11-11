@@ -3,10 +3,14 @@ require 'json'
 module Log
   class JSONFormatter
 
+    def initialize(appname)
+      @appname = appname
+    end
+
     def call(severity, time, progname, msg)
       log_item = {
-        app: progname,
         host: host,
+        app: @appname,
         level: severity,
       }
       log_item[:message] = msg[:message] if msg[:message]
