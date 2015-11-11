@@ -1,6 +1,7 @@
 require 'csv2avro/schema'
 require 'csv2avro/avro_writer'
 require 'csv2avro/event'
+require 'csv2avro/metric'
 require 'csv'
 
 class CSV2Avro
@@ -20,6 +21,7 @@ class CSV2Avro
 
     def convert
       while not csv.eof? do
+        Log.puts(metrics: [Metric.new('lines_processed', row_number, 'counter')]) if row_number % 1000 == 0
         begin
           row = csv.shift
         rescue CSV::MalformedCSVError
@@ -57,6 +59,7 @@ class CSV2Avro
         end
       end
       @writer.flush
+      Log.puts(metrics: [Metric.new('lines_processed', row_number, 'counter')])
     end
 
     private

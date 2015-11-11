@@ -13,14 +13,15 @@ class CSV2Avro
     @stdout_option = !input_path || options.delete(:stdout)
 
     @options = options
-    Log.puts(event: Event.new('started_processing', true, {filename: File.basename(input_path)}))
   end
 
   def convert
+    Log.puts(event: Event.new('started_processing', true, {filename: File.basename(input_path)}))
     Converter.new(reader, writer, bad_rows_writer, error_writer, input_path, options, schema: schema).convert
   ensure
     writer.close if writer
     bad_rows_writer.close
+    Log.puts(event: Event.new('processing_done', true, {filename: File.basename(input_path)}))
   end
 
   private

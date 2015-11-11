@@ -17,6 +17,7 @@ class CSV2Avro
       }
       log_item[:message] = message if message
       log_item[:event] = event.to_hash if event
+      log_item[:metrics] = metrics.map { |metric| metric.to_hash } if metrics
       output.puts log_item.to_json
     end
 
