@@ -6,11 +6,11 @@ require 'csv'
 
 class CSV2Avro
   class Converter
-    def initialize(reader, writer, bad_rows_writer, error_writer, input_path, options, schema: schema)
+    def initialize(reader, writer, bad_rows_writer, log_writer, input_path, options, schema: schema)
       @reader = reader
       @writer = writer
       @bad_rows_writer = bad_rows_writer
-      @error_writer = error_writer
+      @log_writer = log_writer
       @input_path = input_path
       @options = options
       @schema = schema
@@ -21,12 +21,12 @@ class CSV2Avro
 
     def convert
       while not csv.eof? do
-        Log.puts(metrics: [Metric.new('lines_processed', row_number, 'counter')]) if row_number % 1000 == 0
+        @log_writer.puts(metrics: [Metric.new('lines_processed', row_number, 'counter')]) if row_number % 1000 == 0
         begin
           row = csv.shift
         rescue CSV::MalformedCSVError
           error_msg = "L#{row_number}: Unable to parse"
-          @error_writer.puts(message: error_msg,
+          @log_writer.puts(message: error_msg,
                              event: Event.new('parse_error',
                                               true,
                                               {
@@ -46,7 +46,7 @@ class CSV2Avro
           @writer.write(hash)
         rescue CSV2Avro::SchemaValidationError => e
           error_msg = "L#{row_number}: #{e.errors.join(', ')}"
-          @error_writer.puts(message: error_msg,
+          @log_writer.puts(message: error_msg,
                              event: Event.new('schema_violation',
                                               true,
                                               {
@@ -59,7 +59,7 @@ class CSV2Avro
         end
       end
       @writer.flush
-      Log.puts(metrics: [Metric.new('lines_processed', row_number, 'counter')])
+      @log_writer.puts(metrics: [Metric.new('lines_processed', row_number, 'counter')])
     end
 
     private

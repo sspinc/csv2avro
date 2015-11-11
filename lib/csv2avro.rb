@@ -16,12 +16,14 @@ class CSV2Avro
   end
 
   def convert
-    Log.puts(event: Event.new('started_processing', true, {filename: File.basename(input_path)}))
-    Converter.new(reader, writer, bad_rows_writer, error_writer, input_path, options, schema: schema).convert
+    log_writer.puts(event: Event.new('started_processing', true, {filename: File.basename(input_path)}))
+
+    Converter.new(reader, writer, bad_rows_writer, log_writer, input_path, options, schema: schema).convert
+
+    log_writer.puts(event: Event.new('processing_done', true, {filename: File.basename(input_path)}))
   ensure
     writer.close if writer
     bad_rows_writer.close
-    Log.puts(event: Event.new('processing_done', true, {filename: File.basename(input_path)}))
   end
 
   private
@@ -57,7 +59,7 @@ class CSV2Avro
     "#{dir}/#{name}.avro"
   end
 
-  def error_writer
+  def log_writer
     Log
   end
 
