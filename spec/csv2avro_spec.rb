@@ -10,13 +10,10 @@ RSpec.describe CSV2Avro do
     context "Unquoted header" do
       before do
         ARGV.replace ['./spec/support/data.csv']
+        converter.convert
       end
 
       bad_rows_output = "L4: Missing value at name\nL7: Unable to parse\nL9: Missing value at id, Missing value at name\nL10: 'male-shoes' at id doesn't match the type '\"int\"', Missing value at name\n"
-      it 'should write errors to STDERR' do
-        expect { converter.convert }.to output(bad_rows_output).to_stderr
-      end
-
       it 'should have bad rows' do
         File.open('./spec/support/data.bad', 'r') do |file|
           expect(file.read).to eq(bad_rows_output)
@@ -40,10 +37,7 @@ RSpec.describe CSV2Avro do
     context "Quoted header" do
       before do
         ARGV.replace ['./spec/support/data_quoted.csv']
-      end
-
-      it 'should write errors to STDERR' do
-        expect { converter.convert }.to output("L4: Missing value at name\nL7: Unable to parse\n").to_stderr
+        converter.convert
       end
 
       it 'should have a bad row' do

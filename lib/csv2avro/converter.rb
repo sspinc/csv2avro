@@ -26,7 +26,7 @@ class CSV2Avro
           row = csv.shift
         rescue CSV::MalformedCSVError
           error_msg = "L#{row_number}: Unable to parse"
-          @log_writer.info(message: error_msg,
+          @log_writer.error(message: error_msg,
                            event: Log::Event.new('parse_error',
                                             true,
                                             {
@@ -45,7 +45,7 @@ class CSV2Avro
           @writer.write(hash)
         rescue CSV2Avro::SchemaValidationError => e
           error_msg = "L#{row_number}: #{e.errors.join(', ')}"
-          @log_writer.info(message: error_msg,
+          @log_writer.error(message: error_msg,
                            event: Log::Event.new('schema_violation',
                                             true,
                                             {
