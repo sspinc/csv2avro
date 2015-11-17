@@ -1,16 +1,13 @@
-require 'logger'
 require 'csv2avro/converter'
 require 'csv2avro/version'
-require 'log/event'
-require 'log/json_formatter'
+
+require 'logr'
 
 class CSV2Avro
   attr_reader :input_path, :schema_path, :bad_rows_path, :stdout_option, :options
 
-  def self.log
-    @log ||= Logger.new(STDOUT).tap do |log|
-      log.formatter = Log::JSONFormatter.new('csv2avro')
-    end
+  def self.logger
+    @logger ||= Logr::Logger.new('csv2avro')
   end
 
   def initialize(options)
@@ -23,11 +20,16 @@ class CSV2Avro
   end
 
   def convert
-    CSV2Avro.log.info(event: Log::Event.new('started_converting', {filename: input_filename}, monitored: true))
+    CSV2Avro.logger.event('started_converting', filename: input_filename)
+                   .monitored("CSV2Avro started converting #{input_filename}", '')
+                   .info
 
-    Converter.new(reader, writer, bad_rows_writer, input_filename, options, schema: schema).convert
+    lines = Converter.new(reader, writer, bad_rows_writer, input_filename, options, schema: schema).convert
 
-    CSV2Avro.log.info(event: Log::Event.new('finished_converting', {filename: input_filename}, monitored: true))
+    CSV2Avro.logger.event('finished_converting', filename: input_filename)
+                   .metric('lines_processed', lines)
+                   .monitored("CSV2Avro finished converting #{input_filename}", '')
+                   .info
   ensure
     writer.close if writer
     bad_rows_writer.close
