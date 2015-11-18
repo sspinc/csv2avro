@@ -1,8 +1,18 @@
 require 'csv2avro/converter'
 require 'csv2avro/version'
 
+require 'logr'
+
 class CSV2Avro
   attr_reader :input_path, :schema_path, :bad_rows_path, :stdout_option, :options
+
+  def self.logger
+    @logger ||= Logr::Logger.new('csv2avro')
+  end
+
+  def logger
+    self.class.logger
+  end
 
   def initialize(options)
     @input_path = ARGV.first
@@ -14,7 +24,16 @@ class CSV2Avro
   end
 
   def convert
-    Converter.new(reader, writer, bad_rows_writer, error_writer, options, schema: schema).convert
+    logger.event('started_converting', filename: input_filename)
+          .monitored("Started converting #{input_filename}", "Started converting #{input_filename}")
+          .info("Started converting #{input_filename}")
+
+    lines = Converter.new(reader, writer, bad_rows_writer, input_filename, options, schema: schema).convert
+
+    logger.event('finished_converting', filename: input_filename)
+          .metric('lines_processed', lines)
+          .monitored("Finished converting #{input_filename}", "Finished converting #{input_filename}, processed #{lines} lines in total.")
+          .info("Finished converting #{input_filename}")
   ensure
     writer.close if writer
     bad_rows_writer.close
@@ -45,16 +64,16 @@ class CSV2Avro
     end
   end
 
+  def input_filename
+    File.basename(input_path)
+  end
+
   def avro_uri
     dir = File.dirname(input_path)
     ext = File.extname(input_path)
     name = File.basename(input_path, ext)
 
     "#{dir}/#{name}.avro"
-  end
-
-  def error_writer
-    $stderr
   end
 
   def bad_rows_writer

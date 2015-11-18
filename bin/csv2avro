@@ -48,10 +48,12 @@ begin
 
   CSV2Avro.new(options).convert
 rescue OptionParser::MissingArgument => ex
+  CSV2Avro.logger.fatal(ex.message)
   $stderr.puts ex.message
   $stderr.puts option_parser
   exit 2
 rescue Exception => e
+  CSV2Avro.logger.fatal("processing failed: #{e.message}")
   $stderr.puts 'Uh oh, something went wrong!'
   $stderr.puts e.message
   $stderr.puts e.backtrace.join("\n")

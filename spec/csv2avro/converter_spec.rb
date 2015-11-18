@@ -6,7 +6,6 @@ RSpec.describe CSV2Avro::Converter do
     let(:writer) { StringIO.new }
     let(:avro_writer) { CSV2Avro::AvroWriter.new(writer, schema) }
     let(:bad_rows_writer) { StringIO.new }
-    let(:error_writer) { StringIO.new }
 
     context 'schema with string and integer columns' do
       let(:schema_reader) do
@@ -35,15 +34,11 @@ RSpec.describe CSV2Avro::Converter do
         end
 
         before do
-          CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, error_writer, {}, schema: schema).convert
+          CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, 'data.csv', {}, schema: schema).convert
         end
 
         it 'should not have any bad rows' do
           expect(bad_rows_writer.read).to be_empty
-        end
-
-        it 'should not have any errors' do
-          expect(error_writer.read).to be_empty
         end
 
         it 'should store the data with the given schema' do
@@ -68,15 +63,11 @@ RSpec.describe CSV2Avro::Converter do
         end
 
         before do
-          CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, error_writer, { delimiter: "\t" }, schema: schema).convert
+          CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, 'data.csv', { delimiter: "\t" }, schema: schema).convert
         end
 
         it 'should not have any bad rows' do
           expect(bad_rows_writer.read).to be_empty
-        end
-
-        it 'should not have any errors' do
-          expect(error_writer.read).to be_empty
         end
 
         it 'should store the data with the given schema' do
@@ -117,15 +108,11 @@ RSpec.describe CSV2Avro::Converter do
         end
 
         before do
-          CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, error_writer, {}, schema: schema).convert
+          CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, 'data.csv', {}, schema: schema).convert
         end
 
         it 'should not have any bad rows' do
           expect(bad_rows_writer.read).to be_empty
-        end
-
-        it 'should not have any errors' do
-          expect(error_writer.read).to be_empty
         end
 
         it 'should store the data with the given schema' do
@@ -150,15 +137,11 @@ RSpec.describe CSV2Avro::Converter do
         end
 
         before do
-          CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, error_writer, { delimiter: "\t", array_delimiter: ';' }, schema: schema).convert
+          CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, 'data.csv', { delimiter: "\t", array_delimiter: ';' }, schema: schema).convert
         end
 
         it 'should not have any bad rows' do
           expect(bad_rows_writer.read).to be_empty
-        end
-
-        it 'should not have any errors' do
-          expect(error_writer.read).to be_empty
         end
 
         it 'should store the data with the given schema' do
@@ -199,15 +182,11 @@ RSpec.describe CSV2Avro::Converter do
       end
 
       before do
-        CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, error_writer, { write_defaults: true }, schema: schema).convert
+        CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, 'data.csv', { write_defaults: true }, schema: schema).convert
       end
 
       it 'should not have any bad rows' do
         expect(bad_rows_writer.read).to be_empty
-      end
-
-      it 'should not have any errors' do
-        expect(error_writer.read).to be_empty
       end
 
       it 'should store the defaults data' do
@@ -245,15 +224,11 @@ RSpec.describe CSV2Avro::Converter do
       end
 
       before do
-        CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, error_writer, {}, schema: schema).convert
+        CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, 'data.csv', {}, schema: schema).convert
       end
 
       it 'should not have any bad rows' do
         expect(bad_rows_writer.read).to be_empty
-      end
-
-      it 'should not have any errors' do
-        expect(error_writer.read).to be_empty
       end
 
       it 'should store the data with the given schema' do
@@ -298,15 +273,11 @@ RSpec.describe CSV2Avro::Converter do
       end
 
       before do
-        CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, error_writer, { write_defaults: true }, schema: schema).convert
+        CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, 'data.csv', { write_defaults: true }, schema: schema).convert
       end
 
       it 'should not have any bad rows' do
         expect(bad_rows_writer.read).to be_empty
-      end
-
-      it 'should not have any errors' do
-        expect(error_writer.read).to be_empty
       end
 
       it 'should store the data with the given schema' do
@@ -348,17 +319,11 @@ RSpec.describe CSV2Avro::Converter do
       end
 
       before do
-        CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, error_writer, { delimiter: "\t" }, schema: schema).convert
+        CSV2Avro::Converter.new(reader, avro_writer, bad_rows_writer, 'data.csv', { delimiter: "\t" }, schema: schema).convert
       end
 
       it 'should report the bad rows correctly' do
         expect(bad_rows_writer.string).to eq(
-          "L2: Missing value at name\nL5: Missing value at name\n"
-        )
-      end
-
-      it 'should have an error' do
-        expect(error_writer.string).to eq(
           "L2: Missing value at name\nL5: Missing value at name\n"
         )
       end
