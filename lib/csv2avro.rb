@@ -10,6 +10,10 @@ class CSV2Avro
     @logger ||= Logr::Logger.new('csv2avro')
   end
 
+  def logger
+    self.class.logger
+  end
+
   def initialize(options)
     @input_path = ARGV.first
     @schema_path = options.delete(:schema)
@@ -20,16 +24,16 @@ class CSV2Avro
   end
 
   def convert
-    CSV2Avro.logger.event('started_converting', filename: input_filename)
-                   .monitored("Started converting #{input_filename}", "Started converting #{input_filename}")
-                   .info("Started converting #{input_filename}")
+    logger.event('started_converting', filename: input_filename)
+          .monitored("Started converting #{input_filename}", "Started converting #{input_filename}")
+          .info("Started converting #{input_filename}")
 
     lines = Converter.new(reader, writer, bad_rows_writer, input_filename, options, schema: schema).convert
 
-    CSV2Avro.logger.event('finished_converting', filename: input_filename)
-                   .metric('lines_processed', lines)
-                   .monitored("Finished converting #{input_filename}", "Finished converting #{input_filename}, processed #{lines} lines in total.")
-                   .info("Finished converting #{input_filename}")
+    logger.event('finished_converting', filename: input_filename)
+          .metric('lines_processed', lines)
+          .monitored("Finished converting #{input_filename}", "Finished converting #{input_filename}, processed #{lines} lines in total.")
+          .info("Finished converting #{input_filename}")
   ensure
     writer.close if writer
     bad_rows_writer.close
