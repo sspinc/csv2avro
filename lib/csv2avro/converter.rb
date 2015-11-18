@@ -29,7 +29,7 @@ class CSV2Avro
         rescue CSV::MalformedCSVError
           error_msg = "L#{row_number}: Unable to parse"
           CSV2Avro::Converter.logger.event('parse_error', filename: @filename, line: row_number)
-                         .error(error_msg)
+                             .error(error_msg)
           @bad_rows_writer.puts(error_msg)
           next
         end
@@ -44,7 +44,7 @@ class CSV2Avro
           error_msg = "L#{row_number}: #{e.errors.join(', ')}"
           e.errors.each do |error|
             CSV2Avro::Converter.logger.event('schema_violation', filename: @filename, line: row_number, cause: error)
-                           .error(error_msg)
+                               .error(error_msg)
           end
           @bad_rows_writer.puts(error_msg)
         end
