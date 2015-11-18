@@ -21,14 +21,14 @@ class CSV2Avro
 
   def convert
     CSV2Avro.logger.event('started_converting', filename: input_filename)
-                   .monitored("CSV2Avro started converting #{input_filename}", '')
+                   .monitored("Started converting #{input_filename}", "Started converting #{input_filename}")
                    .info("Started converting #{input_filename}")
 
     lines = Converter.new(reader, writer, bad_rows_writer, input_filename, options, schema: schema).convert
 
     CSV2Avro.logger.event('finished_converting', filename: input_filename)
                    .metric('lines_processed', lines)
-                   .monitored("CSV2Avro finished converting #{input_filename}", '')
+                   .monitored("Finished converting #{input_filename}", "Finished converting #{input_filename}, processed #{lines} lines in total.")
                    .info("Finished converting #{input_filename}")
   ensure
     writer.close if writer
