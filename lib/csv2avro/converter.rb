@@ -1,14 +1,24 @@
 require 'csv2avro/schema'
 require 'csv2avro/avro_writer'
 require 'csv'
+require 'logr'
 
 class CSV2Avro
   class Converter
-    def initialize(reader, writer, bad_rows_writer, error_writer, options, schema: schema)
+
+    def self.logger
+      @logger ||= Logr::Logger.new('csv2avro.converter')
+    end
+
+    def logger
+      self.class.logger
+    end
+
+    def initialize(reader, writer, bad_rows_writer, filename, options, schema: schema)
       @reader = reader
       @writer = writer
       @bad_rows_writer = bad_rows_writer
-      @error_writer = error_writer
+      @filename = filename
       @options = options
       @schema = schema
 
@@ -22,7 +32,8 @@ class CSV2Avro
           row = csv.shift
         rescue CSV::MalformedCSVError
           error_msg = "L#{row_number}: Unable to parse"
-          @error_writer.puts(error_msg)
+          logger.event('parse_error', filename: @filename, line: row_number)
+                .error(error_msg)
           @bad_rows_writer.puts(error_msg)
           next
         end
@@ -35,11 +46,15 @@ class CSV2Avro
           @writer.write(hash)
         rescue CSV2Avro::SchemaValidationError => e
           error_msg = "L#{row_number}: #{e.errors.join(', ')}"
-          @error_writer.puts(error_msg)
+          e.errors.each do |error|
+            logger.event('schema_violation', filename: @filename, line: row_number, cause: error)
+                  .error(error_msg)
+          end
           @bad_rows_writer.puts(error_msg)
         end
       end
       @writer.flush
+      row_number
     end
 
     private

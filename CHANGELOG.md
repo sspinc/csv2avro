@@ -3,6 +3,16 @@
 All notable changes to this project are documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.0 (2015-11-18) [compare](https://github.com/sspinc/csv2avro/compare/1.1.0...1.2.0))
+Structured logging and metrics
+
+### Changed
+* Log in JSON format using Logr (https://github.com/sspinc/logr)
+
+### Added
+* New started_converting and finished_converting events
+* New lines_processed metric
+
 ## 1.1.0 (2015-09-16) [compare](https://github.com/sspinc/csv2avro/compare/1.0.2...1.1.0))
 
 ### Changed
