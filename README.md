@@ -2,6 +2,8 @@
 
 Convert CSV files to Avro like a boss.
 
+![CircleCI](https://circleci.com/gh/sspinc/csv2avro.svg?style=shield&circle-token=:circle-token)
+
 ## Installation
 
     $ gem install csv2avro
