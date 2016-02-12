@@ -67,9 +67,14 @@ class CSV2Avro
       @options[:delimiter] || ','
     end
 
+    def row_sep
+      @options[:line_ending] || :auto
+    end
+
     def csv_options
       {
         col_sep: col_sep,
+        row_sep: row_sep,
         headers: @header,
         header_converters: :aliases,
         skip_blanks: true,
@@ -82,7 +87,6 @@ class CSV2Avro
       CSV::HeaderConverters[:aliases] = lambda do |header|
         @schema.aliases[header] || header
       end
-
       @csv ||= CSV.new(@reader, csv_options)
     end
 
