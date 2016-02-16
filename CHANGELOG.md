@@ -3,6 +3,12 @@
 All notable changes to this project are documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.3.0 (2016-02-16) [compare](https://github.com/sspinc/csv2avro/compare/1.2.0...1.3.0))
+Support for custom line endings
+
+### Added
+* New line ending command line parameter
+
 ## 1.2.0 (2015-11-18) [compare](https://github.com/sspinc/csv2avro/compare/1.1.0...1.2.0))
 Structured logging and metrics
 
