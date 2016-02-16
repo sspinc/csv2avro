@@ -61,6 +61,12 @@ RSpec.describe CSV2Avro do
     end
 
     context "CRLF line endings" do
+      let(:options) { { schema: './spec/support/schema.avsc',
+                        line_ending: "\r\n" } }
+      subject(:converter) do
+        CSV2Avro.new(options)
+      end
+
       before do
         ARGV.replace ['./spec/support/data_crlf.csv']
         converter.convert
@@ -68,7 +74,7 @@ RSpec.describe CSV2Avro do
 
       it 'should have a bad row' do
         File.open('./spec/support/data_crlf.bad', 'r') do |file|
-          expect(file.read).to eq("L4: Missing value at name")
+          expect(file.read).to eq("L4: Missing value at name\n")
         end
       end
 
