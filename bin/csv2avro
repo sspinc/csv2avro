@@ -22,6 +22,10 @@ option_parser = OptionParser.new do |opts|
     options[:delimiter] = char.gsub("\\t", "\t")
   end
 
+  opts.on('-l', '--line-ending [LINE_ENDING]', 'Line ending character used as row separator in CSV parsing') do |char|
+    options[:line_ending] = char.gsub("\\r", "\r").gsub("\\n", "\n")
+  end
+
   opts.on('-a', '--array-delimiter [ARRAY_DELIMITER]', 'Array field delimiter. If none specified, then comma is used as the delimiter.') do |char|
     options[:array_delimiter] = char
   end
