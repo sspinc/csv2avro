@@ -59,5 +59,30 @@ RSpec.describe CSV2Avro do
         end
       end
     end
+
+    context "CRLF line endings" do
+      before do
+        ARGV.replace ['./spec/support/data_crlf.csv']
+        converter.convert
+      end
+
+      it 'should have a bad row' do
+        File.open('./spec/support/data_crlf.bad', 'r') do |file|
+          expect(file.read).to eq("L4: Missing value at name")
+        end
+      end
+
+      it 'should contain the avro data' do
+        File.open('./spec/support/data_crlf.avro', 'r') do |file|
+          expect(AvroReader.new(file).read).to eq(
+            [
+              { 'id'=>1, 'name'=>'dresses',     'description'=>'Dresses' },
+              { 'id'=>2, 'name'=>'female-tops', 'description'=>nil },
+            ]
+          )
+        end
+      end
+    end
+
   end
 end
