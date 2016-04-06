@@ -25,5 +25,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bump", "~> 0.5"
 
   spec.add_runtime_dependency "avro", "~> 1.7"
-  spec.add_runtime_dependency "logr", "~> 0.1"
+  spec.add_runtime_dependency "logr", "~> 0.2"
 end
