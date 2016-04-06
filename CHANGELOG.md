@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.3.1 (2016-04-06) [compare](https://github.com/sspinc/csv2avro/compare/1.3.0...1.3.1))
+Bump Logr version to 0.2.0
+
+### Changed
+* Logr version to 0.2.0
+
+
 ## 1.3.0 (2016-02-16) [compare](https://github.com/sspinc/csv2avro/compare/1.2.0...1.3.0))
 Support for custom line endings
 
